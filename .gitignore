@@ -1,0 +1,7 @@
+# Unreal generated files #
+**/Binaries/
+**/Config
+**/Content/StarterContent/
+**/Intermediate/
+**/.vs/
+**/Saved/
