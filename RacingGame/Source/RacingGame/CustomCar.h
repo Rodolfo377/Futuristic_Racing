@@ -8,6 +8,8 @@
 
 
 class USphereComponent;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class RACINGGAME_API ACustomCar : public APawn
@@ -30,6 +32,13 @@ public:
 		UStaticMeshComponent* OurVisibleComponent;
 
 	USphereComponent* SphereComponent;
+
+	UPROPERTY(EditAnywhere)
+	USpringArmComponent* SpringArmComponent;
+
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* OurCamera;
+
 	//Input functions
 	void Move_XAxis(float AxisValue);
 	void Move_YAxis(float AxisValue);
@@ -40,7 +49,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		float RaycastReach = 50;
 
-	FVector CurrentVelocity;
+	UPROPERTY(EditAnywhere)
+		float Acceleration = 0;
+
+	//FVector CurrentVelocity;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

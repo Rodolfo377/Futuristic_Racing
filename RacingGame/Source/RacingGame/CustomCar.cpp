@@ -8,6 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
 
 #define OUT
@@ -22,22 +23,31 @@ ACustomCar::ACustomCar()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
 	//create dummy root component we can attach things to.
-	RootComponent = SphereComponent;	
+
+	SphereComponent->SetSimulatePhysics(true);
+	SphereComponent->InitSphereRadius(100.f);
+	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	RootComponent = SphereComponent;
 
 	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OurVisibleComponent"));
 	OurVisibleComponent->SetupAttachment(RootComponent);
 	OurVisibleComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	OurVisibleComponent->SetSimulatePhysics(true);	
 
-	SphereComponent->SetSimulatePhysics(true);
-	SphereComponent->InitSphereRadius(40.f);
-	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-
+	/*SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("OurSpringArm"));
+	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->TargetArmLength = 300;
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->SetRelativeLocation(FVector(-250, 0, 250));*/
 	//Create a camera and a visible object
-	UCameraComponent* OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
+	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
+	//OurCamera->SetupAttachment(SpringArmComponent);		
 	OurCamera->SetupAttachment(RootComponent);
 	OurCamera->SetRelativeLocation(FVector(-250, 0, 250));
 	OurCamera->SetRelativeRotation(FRotator(-45, 0, 0));
+
 }
 
 // Called when the game starts or when spawned
@@ -78,17 +88,22 @@ void ACustomCar::Tick(float DeltaTime)
 		if (Hit.bBlockingHit)
 		{
 			
-			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()));
+			OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce));
 			UE_LOG(LogTemp, Warning, TEXT("Adding Force"));
 			
 		}
 		else
 		{
-			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
+			OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce*0.75f));
 			UE_LOG(LogTemp, Warning, TEXT("Force Out"));
 		}
-		FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
-		SetActorLocation(NewLocation);
+		/*FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
+		SetActorLocation(NewLocation);*/
+		UE_LOG(LogTemp, Warning, TEXT("Root Component Transform: (%f, %f, %f)"),
+			RootComponent->GetComponentTransform().GetLocation().X,
+			RootComponent->GetComponentTransform().GetLocation().Y,
+			RootComponent->GetComponentTransform().GetLocation().Z);
+
 	}
 }
 
@@ -130,11 +145,17 @@ FHitResult ACustomCar::RaycastToFloor()
 
 void ACustomCar::Move_XAxis(float AxisValue)
 {
-	CurrentVelocity.X = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+	//CurrentVelocity.X = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+	FRotator steer = FRotator(0, AxisValue * 5.0f, 0);
+	SphereComponent->AddLocalRotation(steer);
 }
 
 void ACustomCar::Move_YAxis(float AxisValue)
 {
-	CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+	SphereComponent->AddForce(GetActorForwardVector() * Acceleration * AxisValue);
+	if(AxisValue > 0.1f)
+	UE_LOG(LogTemp, Warning, TEXT("Accelerating: %f"), Acceleration);
+
+	//CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
 }
 
