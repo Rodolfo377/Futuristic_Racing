@@ -8,6 +8,9 @@
 
 
 class USphereComponent;
+class USpringArmComponent;
+class UCameraComponent;
+
 
 UCLASS()
 class RACINGGAME_API ACustomCar : public APawn
@@ -28,8 +31,16 @@ public:
 	FHitResult RaycastToFloor();
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* OurVisibleComponent;
+	UPROPERTY(EditAnywhere)
+	USphereComponent* SphereComponent = nullptr;
+	UPROPERTY(EditAnywhere)
+	USpringArmComponent* SpringArmComponent = nullptr;
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* OurCamera = nullptr;
 
-	USphereComponent* SphereComponent;
+	UPROPERTY(EditAnywhere)
+	float CameraLagSpeed = 0;
+
 	//Input functions
 	void Move_XAxis(float AxisValue);
 	void Move_YAxis(float AxisValue);

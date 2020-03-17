@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/ActorComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "DrawDebugHelpers.h"
 
@@ -33,9 +34,15 @@ ACustomCar::ACustomCar()
 	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("OurSpringArm"));
+	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->TargetArmLength = 300;
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->CameraLagSpeed = CameraLagSpeed;
+
 	//Create a camera and a visible object
-	UCameraComponent* OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
-	OurCamera->SetupAttachment(RootComponent);
+	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
+	OurCamera->SetupAttachment(SpringArmComponent);
 	OurCamera->SetRelativeLocation(FVector(-250, 0, 250));
 	OurCamera->SetRelativeRotation(FRotator(-45, 0, 0));
 }
