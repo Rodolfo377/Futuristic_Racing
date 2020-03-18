@@ -28,8 +28,10 @@ ACustomCar::ACustomCar()
 	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OurVisibleComponent"));
 	OurVisibleComponent->SetupAttachment(RootComponent);
 	OurVisibleComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	OurVisibleComponent->SetSimulatePhysics(true);
 
 	SphereComponent->SetSimulatePhysics(true);
+	SphereComponent->SetEnableGravity(false);
 	SphereComponent->InitSphereRadius(40.f);
 	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -84,6 +86,13 @@ void ACustomCar::ApplySidewaysFriction()
 {
 }
 
+void ACustomCar::ApplyCustomGravity()
+{
+	SphereComponent->AddForce(UpwardsForce*(0.05f)*(-1)*GetActorUpVector()*CustomGravity*OurVisibleComponent->GetMass());
+	//OurVisibleComponent->AddForce(UpwardsForce*(0.05f)*(-1)*GetActorUpVector()*CustomGravity*OurVisibleComponent->GetMass());
+	UE_LOG(LogTemp, Warning, TEXT("Applying custom gravity"));
+}
+
 // Called every frame
 void ACustomCar::Tick(float DeltaTime)
 {
@@ -95,16 +104,21 @@ void ACustomCar::Tick(float DeltaTime)
 		{
 			
 			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()));
-			UE_LOG(LogTemp, Warning, TEXT("Adding Force"));
+			//OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()));
+			//UE_LOG(LogTemp, Warning, TEXT("Adding Force"));
 			
 		}
 		else
 		{
 			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
-			UE_LOG(LogTemp, Warning, TEXT("Force Out"));
+			//OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
+			//UE_LOG(LogTemp, Warning, TEXT("Force Out"));
 		}
+		ApplyCustomGravity();
 		/*FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
 		SetActorLocation(NewLocation);*/
+		OurVisibleComponent->SetWorldLocation(SphereComponent->GetComponentLocation());
+		OurVisibleComponent->SetWorldRotation(SphereComponent->GetComponentRotation());
 	}
 }
 
@@ -135,9 +149,7 @@ FHitResult ACustomCar::RaycastToFloor()
 		v2,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParameters
-	);
-
-	
+	);	
 	//draw debug line representing raycast
 	DrawDebugLine(GetWorld(), v1, v2, FColor::Red, false, 0, 0, 10.0f);
 

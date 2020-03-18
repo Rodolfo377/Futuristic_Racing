@@ -31,10 +31,11 @@ public:
 	FHitResult RaycastToFloor();
 	void Accelerate(float AxisValue);
 	void Steer(float AxisValue);
+	
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* OurVisibleComponent;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	USphereComponent* SphereComponent = nullptr;
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComponent = nullptr;
@@ -53,6 +54,10 @@ public:
 		float Acceleration = 0.0f;
 	UPROPERTY(EditAnywhere)
 	float SteerRate = 0.0f;
+	//twice the acceleration of normal gravity
+	UPROPERTY(EditAnywhere)
+	float CustomGravity = 9.8f*2.0f;
+
 
 	FVector CurrentVelocity;
 protected:
@@ -64,4 +69,7 @@ protected:
 	FVector GetReachLineEnd();
 	void ApplyFriction();
 	void ApplySidewaysFriction();
+
+	//Should be twice as strong as normal gravity. Will always pull the ship down on its local vetor space.
+	void ApplyCustomGravity();
 };
