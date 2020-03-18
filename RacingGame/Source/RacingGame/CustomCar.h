@@ -29,6 +29,9 @@ public:
 
 	//Raycast to the floor to apply thrusters
 	FHitResult RaycastToFloor();
+	void Accelerate(float AxisValue);
+	void Steer(float AxisValue);
+
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* OurVisibleComponent;
 	UPROPERTY(EditAnywhere)
@@ -38,18 +41,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* OurCamera = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	float CameraLagSpeed = 0;
 
-	//Input functions
-	void Move_XAxis(float AxisValue);
-	void Move_YAxis(float AxisValue);
 
 	UPROPERTY(EditAnywhere)
 		float UpwardsForce = 0;
 		
 	UPROPERTY(EditAnywhere)
 		float RaycastReach = 50;
+
+	UPROPERTY(EditAnywhere)
+		float Acceleration = 0.0f;
+	UPROPERTY(EditAnywhere)
+	float SteerRate = 0.0f;
 
 	FVector CurrentVelocity;
 protected:
@@ -59,5 +62,6 @@ protected:
 
 	FVector GetReachLineStart();
 	FVector GetReachLineEnd();
-
+	void ApplyFriction();
+	void ApplySidewaysFriction();
 };

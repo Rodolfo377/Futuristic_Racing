@@ -38,7 +38,7 @@ ACustomCar::ACustomCar()
 	SpringArmComponent->SetupAttachment(RootComponent);
 	SpringArmComponent->TargetArmLength = 300;
 	SpringArmComponent->bEnableCameraLag = true;
-	SpringArmComponent->CameraLagSpeed = CameraLagSpeed;
+	
 
 	//Create a camera and a visible object
 	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
@@ -75,6 +75,15 @@ FVector ACustomCar::GetReachLineEnd()
 	return PlayerPosition - GetActorUpVector()*RaycastReach;
 }
 
+void ACustomCar::ApplyFriction()
+{
+	//SphereComponent->AddForce(GetActorForwardVector()*(-0.1f)*Acceleration);
+}
+
+void ACustomCar::ApplySidewaysFriction()
+{
+}
+
 // Called every frame
 void ACustomCar::Tick(float DeltaTime)
 {
@@ -94,8 +103,8 @@ void ACustomCar::Tick(float DeltaTime)
 			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
 			UE_LOG(LogTemp, Warning, TEXT("Force Out"));
 		}
-		FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
-		SetActorLocation(NewLocation);
+		/*FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
+		SetActorLocation(NewLocation);*/
 	}
 }
 
@@ -106,8 +115,8 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	if (PlayerInputComponent)
 	{
-		PlayerInputComponent->BindAxis("MoveX", this, &ACustomCar::Move_XAxis);
-		PlayerInputComponent->BindAxis("MoveY", this, &ACustomCar::Move_YAxis);
+		PlayerInputComponent->BindAxis("Accelerate", this, &ACustomCar::Accelerate);
+		PlayerInputComponent->BindAxis("Steer", this, &ACustomCar::Steer);
 	}
 }
 
@@ -135,13 +144,14 @@ FHitResult ACustomCar::RaycastToFloor()
 	return Hit;
 }
 
-void ACustomCar::Move_XAxis(float AxisValue)
+void ACustomCar::Accelerate(float AxisValue)
 {
-	CurrentVelocity.X = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+	SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 }
 
-void ACustomCar::Move_YAxis(float AxisValue)
+void ACustomCar::Steer(float AxisValue)
 {
-	CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
+	SphereComponent->AddLocalRotation(steer);
 }
 
