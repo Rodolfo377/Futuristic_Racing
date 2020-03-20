@@ -24,6 +24,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Hovering();
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -43,10 +45,13 @@ public:
 	UCameraComponent* OurCamera = nullptr;
 
 
-
 	UPROPERTY(EditAnywhere)
-		float UpwardsForce = 0;
-		
+		float FallGravity = 80.0f;
+	UPROPERTY(EditAnywhere)
+		float HoverForce = 300.0f;
+	UPROPERTY(EditAnywhere)
+		float HoverGravity = 20.0f;
+
 	UPROPERTY(EditAnywhere)
 		float RaycastReach = 50;
 
@@ -59,7 +64,7 @@ public:
 	float CustomGravity = 9.8f*2.0f;
 
 
-	FVector CurrentVelocity;
+	float CarSpeed = 0.0f;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

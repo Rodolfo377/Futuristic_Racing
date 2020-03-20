@@ -27,8 +27,10 @@ ACustomCar::ACustomCar()
 
 	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OurVisibleComponent"));
 	OurVisibleComponent->SetupAttachment(RootComponent);
-	OurVisibleComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	OurVisibleComponent->SetSimulatePhysics(true);
+	//OurVisibleComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	
+
+	//OurVisibleComponent->SetSimulatePhysics(true);
 
 	SphereComponent->SetSimulatePhysics(true);
 	SphereComponent->SetEnableGravity(false);
@@ -79,7 +81,6 @@ FVector ACustomCar::GetReachLineEnd()
 
 void ACustomCar::ApplyFriction()
 {
-	//SphereComponent->AddForce(GetActorForwardVector()*(-0.1f)*Acceleration);
 }
 
 void ACustomCar::ApplySidewaysFriction()
@@ -88,8 +89,8 @@ void ACustomCar::ApplySidewaysFriction()
 
 void ACustomCar::ApplyCustomGravity()
 {
-	SphereComponent->AddForce(UpwardsForce*(0.05f)*(-1)*GetActorUpVector()*CustomGravity*OurVisibleComponent->GetMass());
-	//OurVisibleComponent->AddForce(UpwardsForce*(0.05f)*(-1)*GetActorUpVector()*CustomGravity*OurVisibleComponent->GetMass());
+	//SphereComponent->AddForce(UpwardsForce*(0.05f)*(-1)*GetActorUpVector()*CustomGravity*OurVisibleComponent->GetMass());
+	//OurVisibleComponent->AddForce(UpwardsForce*(-1)*GetActorUpVector()*CustomGravity*OurVisibleComponent->GetMass());
 	UE_LOG(LogTemp, Warning, TEXT("Applying custom gravity"));
 }
 
@@ -97,28 +98,43 @@ void ACustomCar::ApplyCustomGravity()
 void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//handle movement based on moveX and moveY axes
+
+	CarSpeed = FVector::DotProduct(GetVelocity(), GetActorForwardVector());
+
 	{
-		FHitResult Hit = RaycastToFloor();
-		if (Hit.bBlockingHit)
-		{
-			
-			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()));
-			//OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()));
-			//UE_LOG(LogTemp, Warning, TEXT("Adding Force"));
-			
-		}
+		Hovering();
+		//RootComponent->UpdateChildTransforms();
+	}
+}
+
+void ACustomCar::Hovering()
+{
+	FHitResult Hit = RaycastToFloor();
+	FVector groundNormal;
+	
+	if (Hit.bBlockingHit)//if hit ground
+	{
+		float height = Hit.Distance;
+
+		//SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()));
+		groundNormal = Hit.Normal;
+		float forcePercent = 0.0f; // temporary variable for adjusting the force of the thruster for the hovering
+		if (height > 50.0f)
+			forcePercent = 0.75f;
 		else
-		{
-			SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
-			//OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
-			//UE_LOG(LogTemp, Warning, TEXT("Force Out"));
-		}
-		ApplyCustomGravity();
-		/*FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
-		SetActorLocation(NewLocation);*/
-		OurVisibleComponent->SetWorldLocation(SphereComponent->GetComponentLocation());
-		OurVisibleComponent->SetWorldRotation(SphereComponent->GetComponentRotation());
+			forcePercent = 1.0f;
+
+		//Apply hover force
+		SphereComponent->AddForce(groundNormal * HoverForce * forcePercent);
+		//Apply custom gravity
+		SphereComponent->AddForce((-1)*groundNormal * HoverGravity * height);
+
+	}
+	else//flying
+	{
+		//SphereComponent->AddForce(FVector(0, 0, UpwardsForce*OurVisibleComponent->GetMass()*0.75f));
+		SphereComponent->AddForce(FVector(0, 0, -FallGravity));
+		//OurVisibleComponent->AddRelativeRotation();
 	}
 }
 
@@ -158,12 +174,15 @@ FHitResult ACustomCar::RaycastToFloor()
 
 void ACustomCar::Accelerate(float AxisValue)
 {
+	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
+	
 }
 
 void ACustomCar::Steer(float AxisValue)
 {
 	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
+	//SphereComponent->AddLocalRotation(steer);
 	SphereComponent->AddLocalRotation(steer);
 }
 
