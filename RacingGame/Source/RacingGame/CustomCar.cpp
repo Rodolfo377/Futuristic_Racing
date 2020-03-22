@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/ActorComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
@@ -21,31 +22,34 @@ ACustomCar::ACustomCar()
 	//set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	//SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
 	//create dummy root component we can attach things to.
-
-	SphereComponent->SetSimulatePhysics(true);
-	SphereComponent->InitSphereRadius(100.f);
-	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-	RootComponent = SphereComponent;
+		
 
 	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OurVisibleComponent"));
-	OurVisibleComponent->SetupAttachment(RootComponent);
-	OurVisibleComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	OurVisibleComponent->SetSimulatePhysics(true);	
+	OurVisibleComponent->SetSimulatePhysics(true);
 
-	/*SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("OurSpringArm"));
-	SpringArmComponent->SetupAttachment(RootComponent);
+	RootComponent = OurVisibleComponent;
+
+	//OurVisibleComponent->SetupAttachment(RootComponent);
+
+	/*SphereComponent->SetSimulatePhysics(true);
+	SphereComponent->SetEnableGravity(false);
+	SphereComponent->InitSphereRadius(40.f);
+	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);*/
+
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("OurSpringArm"));
+	SpringArmComponent->SetupAttachment(OurVisibleComponent);
+	//SpringArmComponent->AttachTo(RootComponent);
 	SpringArmComponent->TargetArmLength = 300;
-	SpringArmComponent->bEnableCameraLag = true;
-	SpringArmComponent->SetRelativeLocation(FVector(-250, 0, 250));*/
+	SpringArmComponent->bEnableCameraLag = true;	
+
 	//Create a camera and a visible object
 	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
-	//OurCamera->SetupAttachment(SpringArmComponent);		
-	OurCamera->SetupAttachment(RootComponent);
-	OurCamera->SetRelativeLocation(FVector(-250, 0, 250));
+	OurCamera->SetupAttachment(SpringArmComponent);
+	OurCamera->SetRelativeLocation(FVector(0, 0, 0));
 	OurCamera->SetRelativeRotation(FRotator(-45, 0, 0));
 
 }
@@ -53,8 +57,7 @@ ACustomCar::ACustomCar()
 // Called when the game starts or when spawned
 void ACustomCar::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
 }
 
 FVector ACustomCar::GetReachLineStart()
@@ -82,28 +85,42 @@ FVector ACustomCar::GetReachLineEnd()
 void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//handle movement based on moveX and moveY axes
-	{
-		FHitResult Hit = RaycastToFloor();
-		if (Hit.bBlockingHit)
-		{
-			
-			OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce));
-			UE_LOG(LogTemp, Warning, TEXT("Adding Force"));
-			
-		}
-		else
-		{
-			OurVisibleComponent->AddForce(FVector(0, 0, UpwardsForce*0.75f));
-			UE_LOG(LogTemp, Warning, TEXT("Force Out"));
-		}
-		/*FVector NewLocation = GetActorLocation() + (CurrentVelocity*DeltaTime);
-		SetActorLocation(NewLocation);*/
-		UE_LOG(LogTemp, Warning, TEXT("Root Component Transform: (%f, %f, %f)"),
-			RootComponent->GetComponentTransform().GetLocation().X,
-			RootComponent->GetComponentTransform().GetLocation().Y,
-			RootComponent->GetComponentTransform().GetLocation().Z);
 
+	CarSpeed = FVector::DotProduct(GetVelocity(), GetActorForwardVector());
+
+	{
+		Hovering();
+		//RootComponent->UpdateChildTransforms();
+	}
+}
+
+void ACustomCar::Hovering()
+{
+	FHitResult Hit = RaycastToFloor();
+	FVector groundNormal;	
+	if (Hit.bBlockingHit)//if hit ground
+	{
+		float height = Hit.Distance;
+		groundNormal = Hit.Normal;
+		float forcePercent = 0.0f; // temporary variable for adjusting the force of the thruster for the hovering
+		if (height > RaycastReach)
+			forcePercent = 0.95f;
+		else
+			forcePercent = 1.0f;
+		FVector upwardsForce = groundNormal * HoverForce * forcePercent;
+		UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), upwardsForce.X, upwardsForce.Y, upwardsForce.Z);
+		//Apply hover force
+		OurVisibleComponent->AddForce(upwardsForce);
+		//Apply custom gravity
+		FVector downwardsForce = (-1)*groundNormal * HoverGravity * height;
+		UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
+		OurVisibleComponent->AddForce(downwardsForce);
+	}
+	else//flying
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Flying"));
+		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
+		OurVisibleComponent->AddForce(FVector(0, 0, -FallGravity));
 	}
 }
 
@@ -114,8 +131,8 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	if (PlayerInputComponent)
 	{
-		PlayerInputComponent->BindAxis("MoveX", this, &ACustomCar::Move_XAxis);
-		PlayerInputComponent->BindAxis("MoveY", this, &ACustomCar::Move_YAxis);
+		PlayerInputComponent->BindAxis("Accelerate", this, &ACustomCar::Accelerate);
+		PlayerInputComponent->BindAxis("Steer", this, &ACustomCar::Steer);
 	}
 }
 
@@ -134,28 +151,24 @@ FHitResult ACustomCar::RaycastToFloor()
 		v2,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParameters
-	);
-
-	
+	);	
 	//draw debug line representing raycast
 	DrawDebugLine(GetWorld(), v1, v2, FColor::Red, false, 0, 0, 10.0f);
 
 	return Hit;
 }
 
-void ACustomCar::Move_XAxis(float AxisValue)
+void ACustomCar::Accelerate(float AxisValue)
 {
-	//CurrentVelocity.X = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
-	FRotator steer = FRotator(0, AxisValue * 5.0f, 0);
-	SphereComponent->AddLocalRotation(steer);
+	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
+	OurVisibleComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
+	
 }
 
-void ACustomCar::Move_YAxis(float AxisValue)
+void ACustomCar::Steer(float AxisValue)
 {
-	SphereComponent->AddForce(GetActorForwardVector() * Acceleration * AxisValue);
-	if(AxisValue > 0.1f)
-	UE_LOG(LogTemp, Warning, TEXT("Accelerating: %f"), Acceleration);
-
-	//CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * 100.0f;
+	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
+	//SphereComponent->AddLocalRotation(steer);
+	OurVisibleComponent->AddLocalRotation(steer);
 }
 

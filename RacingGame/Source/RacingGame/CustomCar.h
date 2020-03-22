@@ -23,36 +23,44 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Hovering();
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//Raycast to the floor to apply thrusters
 	FHitResult RaycastToFloor();
+	void Accelerate(float AxisValue);
+	void Steer(float AxisValue);
+
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* OurVisibleComponent;
-
-	USphereComponent* SphereComponent;
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* SphereComponent = nullptr;
+	UPROPERTY(EditAnywhere)
+	USpringArmComponent* SpringArmComponent = nullptr;
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* OurCamera = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	USpringArmComponent* SpringArmComponent;
-
+		float FallGravity = 80.0f;
 	UPROPERTY(EditAnywhere)
-	UCameraComponent* OurCamera;
-
-	//Input functions
-	void Move_XAxis(float AxisValue);
-	void Move_YAxis(float AxisValue);
-
+		float HoverForce = 300.0f;
 	UPROPERTY(EditAnywhere)
-		float UpwardsForce = 0;
-		
+		float HoverGravity = 20.0f;
+
 	UPROPERTY(EditAnywhere)
 		float RaycastReach = 50;
 
 	UPROPERTY(EditAnywhere)
-		float Acceleration = 0;
+		float Acceleration = 0.0f;
+	UPROPERTY(EditAnywhere)
+	float SteerRate = 0.0f;
+	//twice the acceleration of normal gravity
+	UPROPERTY(EditAnywhere)
+	float CustomGravity = 9.8f*2.0f;
 
-	//FVector CurrentVelocity;
+	FVector CurrentVelocity;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -60,5 +68,9 @@ protected:
 
 	FVector GetReachLineStart();
 	FVector GetReachLineEnd();
+	void ApplyFriction();
+	void ApplySidewaysFriction();
 
+	//Should be twice as strong as normal gravity. Will always pull the ship down on its local vetor space.
+	void ApplyCustomGravity();
 };
