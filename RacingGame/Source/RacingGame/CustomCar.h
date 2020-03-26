@@ -33,15 +33,8 @@ public:
 	void Accelerate(float AxisValue);
 	void Steer(float AxisValue);
 
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* OurVisibleComponent;
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* SphereComponent = nullptr;
-	UPROPERTY(EditAnywhere)
-	USpringArmComponent* SpringArmComponent = nullptr;
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* OurCamera = nullptr;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* ShipBody = nullptr;
 	UPROPERTY(EditAnywhere)
 		float FallGravity = 80.0f;
 	UPROPERTY(EditAnywhere)
@@ -57,8 +50,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	float SteerRate = 0.0f;
 	//twice the acceleration of normal gravity
-	UPROPERTY(EditAnywhere)
-	float CustomGravity = 9.8f*2.0f;
 
 	FVector CurrentVelocity;
 protected:

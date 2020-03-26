@@ -22,35 +22,6 @@ ACustomCar::ACustomCar()
 	//set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	//SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
-	//create dummy root component we can attach things to.
-		
-
-	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OurVisibleComponent"));
-	OurVisibleComponent->SetSimulatePhysics(true);
-
-	RootComponent = OurVisibleComponent;
-
-	//OurVisibleComponent->SetupAttachment(RootComponent);
-
-	/*SphereComponent->SetSimulatePhysics(true);
-	SphereComponent->SetEnableGravity(false);
-	SphereComponent->InitSphereRadius(40.f);
-	SphereComponent->SetCollisionProfileName(TEXT("FloatingCar"));
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);*/
-
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("OurSpringArm"));
-	SpringArmComponent->SetupAttachment(OurVisibleComponent);
-	//SpringArmComponent->AttachTo(RootComponent);
-	SpringArmComponent->TargetArmLength = 300;
-	SpringArmComponent->bEnableCameraLag = true;	
-
-	//Create a camera and a visible object
-	OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("OurCamera"));
-	OurCamera->SetupAttachment(SpringArmComponent);
-	OurCamera->SetRelativeLocation(FVector(0, 0, 0));
-	OurCamera->SetRelativeRotation(FRotator(-45, 0, 0));
 
 }
 
@@ -86,9 +57,16 @@ void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CarSpeed = FVector::DotProduct(GetVelocity(), GetActorForwardVector());
 
 	{
+		
+		if (!ShipBody->IsValidLowLevel())
+		{
+			UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
+			return;
+		}
+		
+		
 		Hovering();
 		//RootComponent->UpdateChildTransforms();
 	}
@@ -110,17 +88,17 @@ void ACustomCar::Hovering()
 		FVector upwardsForce = groundNormal * HoverForce * forcePercent;
 		UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), upwardsForce.X, upwardsForce.Y, upwardsForce.Z);
 		//Apply hover force
-		OurVisibleComponent->AddForce(upwardsForce);
+		ShipBody->AddForce(upwardsForce);
 		//Apply custom gravity
 		FVector downwardsForce = (-1)*groundNormal * HoverGravity * height;
 		UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
-		OurVisibleComponent->AddForce(downwardsForce);
+		ShipBody->AddForce(downwardsForce);
 	}
 	else//flying
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Flying"));
 		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
-		OurVisibleComponent->AddForce(FVector(0, 0, -FallGravity));
+		ShipBody->AddForce(FVector(0, 0, -FallGravity));
 	}
 }
 
@@ -160,15 +138,25 @@ FHitResult ACustomCar::RaycastToFloor()
 
 void ACustomCar::Accelerate(float AxisValue)
 {
+	if (!ShipBody->IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
+		return;
+	}
 	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
-	OurVisibleComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
+	ShipBody->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	
 }
 
 void ACustomCar::Steer(float AxisValue)
 {
+	if (!ShipBody->IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
+		return;
+	}
 	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
 	//SphereComponent->AddLocalRotation(steer);
-	OurVisibleComponent->AddLocalRotation(steer);
+	ShipBody->AddLocalRotation(steer);
 }
 
