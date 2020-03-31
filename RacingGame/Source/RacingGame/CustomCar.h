@@ -23,13 +23,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Hovering();
+	//void Hovering();
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//Raycast to the floor to apply thrusters
-	FHitResult RaycastToFloor();
+	//FHitResult RaycastToFloor();
 	void Accelerate(float AxisValue);
 	void Steer(float AxisValue);
 
@@ -59,9 +59,9 @@ protected:
 
 	FVector GetReachLineStart();
 	FVector GetReachLineEnd();
-	void ApplyFriction();
+	/*void ApplyFriction();
 	void ApplySidewaysFriction();
 
 	//Should be twice as strong as normal gravity. Will always pull the ship down on its local vetor space.
-	void ApplyCustomGravity();
+	void ApplyCustomGravity();*/
 };
