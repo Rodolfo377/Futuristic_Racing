@@ -67,40 +67,40 @@ void ACustomCar::Tick(float DeltaTime)
 		}
 		
 		
-		Hovering();
+		//Hovering();
 		//RootComponent->UpdateChildTransforms();
 	}
 }
 
-void ACustomCar::Hovering()
-{
-	FHitResult Hit = RaycastToFloor();
-	FVector groundNormal;	
-	if (Hit.bBlockingHit)//if hit ground
-	{
-		float height = Hit.Distance;
-		groundNormal = Hit.Normal;
-		float forcePercent = 0.0f; // temporary variable for adjusting the force of the thruster for the hovering
-		if (height > RaycastReach)
-			forcePercent = 0.95f;
-		else
-			forcePercent = 1.0f;
-		FVector upwardsForce = groundNormal * HoverForce * forcePercent;
-		UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), upwardsForce.X, upwardsForce.Y, upwardsForce.Z);
-		//Apply hover force
-		ShipBody->AddForce(upwardsForce);
-		//Apply custom gravity
-		FVector downwardsForce = (-1)*groundNormal * HoverGravity * height;
-		UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
-		ShipBody->AddForce(downwardsForce);
-	}
-	else//flying
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Flying"));
-		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
-		ShipBody->AddForce(FVector(0, 0, -FallGravity));
-	}
-}
+//void ACustomCar::Hovering()
+//{
+//	FHitResult Hit = RaycastToFloor();
+//	FVector groundNormal;	
+//	if (Hit.bBlockingHit)//if hit ground
+//	{
+//		float height = Hit.Distance;
+//		groundNormal = Hit.Normal;
+//		float forcePercent = 0.0f; // temporary variable for adjusting the force of the thruster for the hovering
+//		if (height > RaycastReach)
+//			forcePercent = 0.95f;
+//		else
+//			forcePercent = 1.0f;
+//		FVector upwardsForce = groundNormal * HoverForce * forcePercent;
+//		UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), upwardsForce.X, upwardsForce.Y, upwardsForce.Z);
+//		//Apply hover force
+//		ShipBody->AddForce(upwardsForce);
+//		//Apply custom gravity
+//		FVector downwardsForce = (-1)*groundNormal * HoverGravity * height;
+//		UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
+//		ShipBody->AddForce(downwardsForce);
+//	}
+//	else//flying
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("Flying"));
+//		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
+//		ShipBody->AddForce(FVector(0, 0, -FallGravity));
+//	}
+//}
 
 // Called to bind functionality to input
 void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -114,27 +114,6 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	}
 }
 
-FHitResult ACustomCar::RaycastToFloor()
-{
-	//Setup query parameters
-	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, this);
-
-	FVector v1 = GetReachLineStart();
-	FVector v2 = GetReachLineEnd();
-
-	FHitResult Hit;
-	GetWorld()->LineTraceSingleByObjectType(
-		OUT Hit,
-		v1,
-		v2,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
-		TraceParameters
-	);	
-	//draw debug line representing raycast
-	DrawDebugLine(GetWorld(), v1, v2, FColor::Red, false, 0, 0, 10.0f);
-
-	return Hit;
-}
 
 void ACustomCar::Accelerate(float AxisValue)
 {
