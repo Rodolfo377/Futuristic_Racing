@@ -31,76 +31,22 @@ void ACustomCar::BeginPlay()
 	Super::BeginPlay();	
 }
 
-FVector ACustomCar::GetReachLineStart()
-{
-	FVector PlayerPosition;
-	FRotator PlayerRotation;	
-	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerPosition, OUT PlayerRotation);
-	PlayerPosition = GetActorLocation();
 
-
-	return PlayerPosition;
-}
-
-FVector ACustomCar::GetReachLineEnd()
-{
-	FVector PlayerPosition;
-	FRotator PlayerRotation;
-	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerPosition, OUT PlayerRotation);
-	PlayerPosition = GetActorLocation();
-
-	return PlayerPosition - GetActorUpVector()*RaycastReach;
-}
 
 // Called every frame
 void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
+		
+	if (!ShipBody->IsValidLowLevel())
 	{
-		
-		if (!ShipBody->IsValidLowLevel())
-		{
-			UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
-			return;
-		}
-		
-		
-		//Hovering();
-		//RootComponent->UpdateChildTransforms();
+		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
+		return;
 	}
+		
 }
 
-//void ACustomCar::Hovering()
-//{
-//	FHitResult Hit = RaycastToFloor();
-//	FVector groundNormal;	
-//	if (Hit.bBlockingHit)//if hit ground
-//	{
-//		float height = Hit.Distance;
-//		groundNormal = Hit.Normal;
-//		float forcePercent = 0.0f; // temporary variable for adjusting the force of the thruster for the hovering
-//		if (height > RaycastReach)
-//			forcePercent = 0.95f;
-//		else
-//			forcePercent = 1.0f;
-//		FVector upwardsForce = groundNormal * HoverForce * forcePercent;
-//		UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), upwardsForce.X, upwardsForce.Y, upwardsForce.Z);
-//		//Apply hover force
-//		ShipBody->AddForce(upwardsForce);
-//		//Apply custom gravity
-//		FVector downwardsForce = (-1)*groundNormal * HoverGravity * height;
-//		UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
-//		ShipBody->AddForce(downwardsForce);
-//	}
-//	else//flying
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("Flying"));
-//		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
-//		ShipBody->AddForce(FVector(0, 0, -FallGravity));
-//	}
-//}
+
 
 // Called to bind functionality to input
 void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -122,6 +68,7 @@ void ACustomCar::Accelerate(float AxisValue)
 		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
 		return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("CustomCar.cpp accelerating: Acceleration: %f"), Acceleration)
 	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	ShipBody->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	
@@ -134,6 +81,7 @@ void ACustomCar::Steer(float AxisValue)
 		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
 		return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("CustomCar.cpp steering"))
 	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
 	//SphereComponent->AddLocalRotation(steer);
 	ShipBody->AddLocalRotation(steer);
