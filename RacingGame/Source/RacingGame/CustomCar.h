@@ -35,20 +35,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ShipBody = nullptr;
-	UPROPERTY(EditAnywhere)
-		float FallGravity = 80.0f;
-	UPROPERTY(EditAnywhere)
-		float HoverForce = 300.0f;
-	UPROPERTY(EditAnywhere)
-		float HoverGravity = 20.0f;
 
-	UPROPERTY(EditAnywhere)
-		float RaycastReach = 50;
 
-	UPROPERTY(EditAnywhere)
-		float Acceleration = 0.0f;
-	UPROPERTY(EditAnywhere)
-	float SteerRate = 0.0f;
+	UPROPERTY(VisibleAnywhere)
+	double Acceleration = 300000.0;
+	UPROPERTY(VisibleAnywhere)
+	double SteerRate = 1.0;
+	UPROPERTY(VisibleAnywhere)
+	double SteerTorque = 100000000.0;
+	UPROPERTY(VisibleAnywhere)
+	double BankingTorque = 10000.0;
 	//twice the acceleration of normal gravity
 
 	FVector CurrentVelocity;
@@ -57,8 +53,6 @@ protected:
 	virtual void BeginPlay() override;
 
 
-	FVector GetReachLineStart();
-	FVector GetReachLineEnd();
 	/*void ApplyFriction();
 	void ApplySidewaysFriction();
 
