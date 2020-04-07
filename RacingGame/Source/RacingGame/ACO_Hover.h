@@ -42,18 +42,18 @@ public:
 		UInputComponent* InputComponent = nullptr;
 
 	///PID Control Variables
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		//Proportional gain
 		double Kp = 10;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		//Integral gain
 		double Ki = 2;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		//Derivative gain
 		double Kd = 1;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		//aka: setpoint
-		double Setpoint = 200;
+		double Setpoint = 300;
 	UPROPERTY(VisibleAnywhere)
 		//aka: min_control
 		double MinControl = 0.9;
@@ -65,10 +65,10 @@ public:
 		double TimeSample = 15;
 
 	///Hovering Variables
-	UPROPERTY(EditAnywhere)
-		double FallGravity = 8000.0;
 	UPROPERTY(VisibleAnywhere)
-		double HoverForceAmount = 100000.0;
+		double FallGravity = 1000000.0;
+	UPROPERTY(VisibleAnywhere)
+		double HoverForceAmount = 200000.0;
 	UPROPERTY(VisibleAnywhere)
 		double HoverGravity = 2000.0;
 	UPROPERTY(VisibleAnywhere)
@@ -89,12 +89,12 @@ private:
 	FHitResult m_Hit;
 	double slerpRotT = 0;
 	//Tweakable value for pitch alignment with track
-	UPROPERTY(EditAnywhere)
-	double TorquePitchAdjust = 1;
+	UPROPERTY(VisibleAnywhere)
+	double TorquePitchAdjust = 5;
 
 	//Tweakable value for roll alignment with track
-	UPROPERTY(EditAnywhere)
-	double TorqueRollAdjust = 1;
+	UPROPERTY(VisibleAnywhere)
+	double TorqueRollAdjust = 10;
 
 	//Order of magnitude of Torque alignment - should NOT be changed
 	UPROPERTY(VisibleAnywhere)

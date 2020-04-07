@@ -37,14 +37,14 @@ public:
 	UStaticMeshComponent* ShipBody = nullptr;
 
 
-	UPROPERTY(VisibleAnywhere)
-	double Acceleration = 300000.0;
+	UPROPERTY(EditAnywhere)
+	double Acceleration = 600000.0;
 	UPROPERTY(VisibleAnywhere)
 	double SteerRate = 1.0;
 	UPROPERTY(VisibleAnywhere)
 	double SteerTorque = 100000000.0;
 	UPROPERTY(VisibleAnywhere)
-	double BankingTorque = 10000.0;
+	double BankingTorque = 50000000.0;
 	//twice the acceleration of normal gravity
 
 	FVector CurrentVelocity;

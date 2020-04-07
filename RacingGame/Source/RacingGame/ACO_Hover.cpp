@@ -33,7 +33,6 @@ void UACO_Hover::BeginPlay()
 void UACO_Hover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	ApplyHoverForce();
 	ApplyCustomGravity();
 	// ...
 }
@@ -117,14 +116,19 @@ void UACO_Hover::ApplyCustomGravity()
 {
 	//TODO: Save hit info on class member variable 
 	FHitResult Hit = RaycastToFloor();
-	FVector groundNormal;
-	if (Hit.bBlockingHit)//if hit ground
-	{			
-		//Apply custom gravity
-		groundNormal = Hit.Normal;
-		FVector downwardsForce = (-1)*groundNormal * HoverGravity * CurrentVehicleHeight;
-		UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
-		FlyingCar->ShipBody->AddForce(downwardsForce);
+	if (Hit.Actor->IsValidLowLevel())
+	{
+		FVector groundNormal;
+		if (Hit.Actor->ActorHasTag("Track"))//if hit ground
+		{
+			//Apply custom gravity
+			groundNormal = Hit.Normal;
+			FVector downwardsForce = (-1)*groundNormal * HoverGravity * CurrentVehicleHeight;
+			UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
+			ApplyHoverForce();
+			FlyingCar->ShipBody->AddForce(downwardsForce);
+		}
+		
 	}
 	else//flying
 	{
@@ -132,58 +136,34 @@ void UACO_Hover::ApplyCustomGravity()
 		UE_LOG(LogTemp, Warning, TEXT("Flying"));
 		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
 		FlyingCar->ShipBody->AddForce(FVector(0, 0, -FallGravity));
+		//align vehicle's up with world up
+		FVector worldUpCross = FVector::CrossProduct(FlyingCar->GetActorUpVector(), FVector(0, 0, 1));
+		FlyingCar->ShipBody->AddTorque(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
+
 	}
 }
 
 void UACO_Hover::AlignShipTrack(FVector groundNormal)
 {
-		/*FVector projectionOnTrack = FlyingCar->GetActorForwardVector() - groundNormal;
-		FVector rightVector = FVector::CrossProduct(projectionOnTrack, groundNormal);
-		FVector forwardVector = FVector::CrossProduct(rightVector, groundNormal);
-		FVector upVector = groundNormal;*/
-	
 
 		FVector upVector = FlyingCar->GetActorUpVector();
 		FVector fwdVector = FlyingCar->GetActorForwardVector();
 		FVector projectionOnTrack;
 		if (groundNormal.Size() != 0)
 		{
-				projectionOnTrack = fwdVector - (FVector::DotProduct(fwdVector, groundNormal)) / (pow(groundNormal.Size(), 2))*groundNormal;
-	
+			projectionOnTrack = fwdVector - (FVector::DotProduct(fwdVector, groundNormal)) / (pow(groundNormal.Size(), 2))*groundNormal;
 
-		UE_LOG(LogTemp, Warning, TEXT("Current vehicle height: %f"), CurrentVehicleHeight)
+			FVector newUpVector = groundNormal;
+			FVector newFwdVector = projectionOnTrack;
 
-		FHitResult Hit = RaycastToFloor();
-		UE_LOG(LogTemp, Warning, TEXT("Hit Location: (%f, %f, %f)"), Hit.Location.X, Hit.Location.Y, Hit.Location.Z)
-		//hitpoint
-		//FVector StartLine = FlyingCar->GetActorLocation() - FlyingCar->GetActorUpVector()*CurrentVehicleHeight;
-		FVector StartLine = Hit.Location;
-		FVector EndLine = StartLine + projectionOnTrack*100;
+			FVector fwdRot = FVector::CrossProduct(fwdVector, newFwdVector);
+			FVector upRot = FVector::CrossProduct(upVector, newUpVector);
 
-		//DrawDebugLine(GetWorld(), StartLine, EndLine, FColor::Cyan, false, 0, 0, 50.0);
+			UE_LOG(LogTemp, Warning, TEXT("crossProduct (%f, %f, %f)"), fwdRot.X, fwdRot.Y, fwdRot.Z);
 
-		FVector StartShip = FlyingCar->GetActorLocation();
-
-		FVector drawFwdShipOld = StartShip + fwdVector * 300;
-		FVector drawFwdShipNew = StartShip + projectionOnTrack * 300;	
-
-		FVector newUpVector = groundNormal;
-		FVector newFwdVector = projectionOnTrack;
-
-		FVector fwdRot = FVector::CrossProduct(fwdVector, newFwdVector);
-		FVector upRot = FVector::CrossProduct(upVector, newUpVector);
-
-		DrawDebugLine(GetWorld(), StartShip, drawFwdShipOld, FColor::Blue, false, 0, 0, 5.0);
-		DrawDebugLine(GetWorld(), StartShip, drawFwdShipNew, FColor::Yellow, false, 0, 0, 5.0);
-		DrawDebugLine(GetWorld(), StartShip, (StartShip + fwdRot*5000), FColor::Green, false, 0, 0, 5.0);
-	
-
-
-		UE_LOG(LogTemp, Warning, TEXT("crossProduct (%f, %f, %f)"), fwdRot.X, fwdRot.Y, fwdRot.Z);
-
-		FlyingCar->ShipBody->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
-		FlyingCar->ShipBody->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
-	}
+			FlyingCar->ShipBody->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
+			FlyingCar->ShipBody->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
+		}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Avoided division by zero error!"));
@@ -220,16 +200,12 @@ FHitResult UACO_Hover::RaycastToFloor()
 	FVector p2 = GetReachLineEnd();
 
 	FHitResult Hit;
-
 	GetWorld()->LineTraceSingleByObjectType(
 		Hit,
 		p1,
 		p2,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParams);
-	//DrawDebugLine(GetWorld(), p1, p2, FColor::Red, false, 0, 0, 10.0f);
-	/*if(!Hit.IsValidBlockingHit())
-		UE_LOG(LogTemp, Error, TEXT("Hit not valid"))*/
 
 	return Hit;
 }
