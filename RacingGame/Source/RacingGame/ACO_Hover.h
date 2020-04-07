@@ -25,7 +25,7 @@ public:
 	void PIDControl();
 	void ApplyHoverForce();
 	void ApplyCustomGravity();
-	void AlignShipTrack();
+	void AlignShipTrack(FVector groundNormal);
 
 	FVector GetReachLineStart();
 	FVector GetReachLineEnd();
@@ -42,37 +42,37 @@ public:
 		UInputComponent* InputComponent = nullptr;
 
 	///PID Control Variables
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		//Proportional gain
-		double Kp = 5;
-	UPROPERTY(EditAnywhere)
+		double Kp = 10;
+	UPROPERTY(VisibleAnywhere)
 		//Integral gain
 		double Ki = 2;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		//Derivative gain
 		double Kd = 1;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		//aka: setpoint
 		double Setpoint = 200;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		//aka: min_control
 		double MinControl = 0.9;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		//aka: max_control
 		double MaxControl = 1;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		//aka: T
 		double TimeSample = 15;
 
 	///Hovering Variables
 	UPROPERTY(EditAnywhere)
-		double FallGravity = 80.0;
-	UPROPERTY(EditAnywhere)
-		double HoverForceAmount = 300000.0;
-	UPROPERTY(EditAnywhere)
-		double HoverGravity = 20.0;
-	UPROPERTY(EditAnywhere)
-		double RaycastReach = 50.0;
+		double FallGravity = 8000.0;
+	UPROPERTY(VisibleAnywhere)
+		double HoverForceAmount = 100000.0;
+	UPROPERTY(VisibleAnywhere)
+		double HoverGravity = 2000.0;
+	UPROPERTY(VisibleAnywhere)
+		double RaycastReach = 300.0;
 
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 protected:
@@ -86,4 +86,17 @@ private:
 	//sensed_output
 	double CurrentVehicleHeight = 0;
 	double ControlSignal = 0;
+	FHitResult m_Hit;
+	double slerpRotT = 0;
+	//Tweakable value for pitch alignment with track
+	UPROPERTY(EditAnywhere)
+	double TorquePitchAdjust = 1;
+
+	//Tweakable value for roll alignment with track
+	UPROPERTY(EditAnywhere)
+	double TorqueRollAdjust = 1;
+
+	//Order of magnitude of Torque alignment - should NOT be changed
+	UPROPERTY(VisibleAnywhere)
+	double TorqueAlignScale = 10000000.0;
 };

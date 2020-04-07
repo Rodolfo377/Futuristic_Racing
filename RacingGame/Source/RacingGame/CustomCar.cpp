@@ -83,7 +83,11 @@ void ACustomCar::Steer(float AxisValue)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("CustomCar.cpp steering"))
 	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
+
+	ShipBody->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
+	ShipBody->AddTorque(-GetActorForwardVector()*SteerTorque*SteerRate*AxisValue);
 	//SphereComponent->AddLocalRotation(steer);
-	ShipBody->AddLocalRotation(steer);
+	//ShipBody->AddLocalRotation(steer);
+	//AddActorLocalRotation(steer);
 }
 
