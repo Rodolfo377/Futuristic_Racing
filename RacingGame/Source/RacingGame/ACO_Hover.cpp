@@ -5,7 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "CustomCar.h"
 #include "Engine/World.h"
-
+#include "Engine/Canvas.h"
 
 // Sets default values for this component's properties
 UACO_Hover::UACO_Hover()
@@ -107,15 +107,20 @@ void UACO_Hover::ApplyHoverForce()
 		FVector totalHoverForce = groundNormal * HoverForceAmount * forcePercent;
 		//UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), totalHoverForce.X, totalHoverForce.Y, totalHoverForce.Z);
 		//Apply hover force
-		FlyingCar->ShipBody->AddForce(totalHoverForce);
+		FlyingCar->ShipCore->AddForce(totalHoverForce);
 	}
-	AlignShipTrack(groundNormal);
+	
 }
 
 void UACO_Hover::ApplyCustomGravity()
 {
 	//TODO: Save hit info on class member variable 
 	FHitResult Hit = RaycastToFloor();
+
+	FVector p1 = GetReachLineStart();
+	FVector p2 = GetReachLineEnd();
+	DrawDebugLine(GetWorld(), p1, p2, FColor::Magenta);
+
 	if (Hit.Actor->IsValidLowLevel())
 	{
 		FVector groundNormal;
@@ -124,28 +129,34 @@ void UACO_Hover::ApplyCustomGravity()
 			//Apply custom gravity
 			groundNormal = Hit.Normal;
 			FVector downwardsForce = (-1)*groundNormal * HoverGravity * CurrentVehicleHeight;
-			UE_LOG(LogTemp, Warning, TEXT("downwards force: (%f, %f, %f)"), downwardsForce.X, downwardsForce.Y, downwardsForce.Z);
+			
 			ApplyHoverForce();
-			FlyingCar->ShipBody->AddForce(downwardsForce);
+			FlyingCar->ShipCore->AddForce(downwardsForce);
+			AlignShipTrack(groundNormal);
+			DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
 		}
-		
+		else
+		{
+			DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Magenta, false, 0, 0, 3);
+			UE_LOG(LogTemp, Warning, TEXT("Hit actor name: %s"), *Hit.Actor->GetName())
+		}
 	}
 	else//flying
 	{
 		//Apply gravity downwards
 		UE_LOG(LogTemp, Warning, TEXT("Flying"));
 		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
-		FlyingCar->ShipBody->AddForce(FVector(0, 0, -FallGravity));
+		FlyingCar->ShipCore->AddForce(FVector(0, 0, -FallGravity));
 		//align vehicle's up with world up
 		FVector worldUpCross = FVector::CrossProduct(FlyingCar->GetActorUpVector(), FVector(0, 0, 1));
-		FlyingCar->ShipBody->AddTorque(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
+		FlyingCar->ShipCore->AddTorque(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
 
 	}
+	
 }
 
 void UACO_Hover::AlignShipTrack(FVector groundNormal)
 {
-
 		FVector upVector = FlyingCar->GetActorUpVector();
 		FVector fwdVector = FlyingCar->GetActorForwardVector();
 		FVector projectionOnTrack;
@@ -161,8 +172,8 @@ void UACO_Hover::AlignShipTrack(FVector groundNormal)
 
 			UE_LOG(LogTemp, Warning, TEXT("crossProduct (%f, %f, %f)"), fwdRot.X, fwdRot.Y, fwdRot.Z);
 
-			FlyingCar->ShipBody->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
-			FlyingCar->ShipBody->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
+			FlyingCar->ShipCore->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
+			FlyingCar->ShipCore->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
 		}
 	else
 	{
@@ -199,6 +210,8 @@ FHitResult UACO_Hover::RaycastToFloor()
 	FVector p1 = GetReachLineStart();
 	FVector p2 = GetReachLineEnd();
 
+	
+
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByObjectType(
 		Hit,
@@ -206,6 +219,8 @@ FHitResult UACO_Hover::RaycastToFloor()
 		p2,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParams);
+
+	
 
 	return Hit;
 }

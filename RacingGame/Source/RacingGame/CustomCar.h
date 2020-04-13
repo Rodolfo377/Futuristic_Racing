@@ -32,9 +32,22 @@ public:
 	//FHitResult RaycastToFloor();
 	void Accelerate(float AxisValue);
 	void Steer(float AxisValue);
+	void ApplySideFriction();
+	//Adds a quick counter-clockwise rotation to the vehicle - Ship-Track alignment Testing purposes
+	void LeftBarrelRoll();
+	//Adds a quick clockwise rotation to the vehicle - Ship-Track alignment Testing purposes
+	void RightBarrelRoll();
 
+	//Here the banking, tricks and other cosmetic transformations will be applied, without affecting the core movement of the ship
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ShipBody = nullptr;
+
+	//Here the acceleration, steering and friction will be applied
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* ShipCore = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	bool sideFrictionDraw = false;
 
 
 	UPROPERTY(EditAnywhere)
@@ -45,6 +58,9 @@ public:
 	double SteerTorque = 100000000.0;
 	UPROPERTY(VisibleAnywhere)
 	double BankingTorque = 50000000.0;
+
+	UPROPERTY(EditAnywhere)
+	double SideFriction = 1000;
 	//twice the acceleration of normal gravity
 
 	FVector CurrentVelocity;
@@ -52,7 +68,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
+	
+	
 	/*void ApplyFriction();
 	void ApplySidewaysFriction();
 

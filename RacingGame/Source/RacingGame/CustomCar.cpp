@@ -29,6 +29,24 @@ ACustomCar::ACustomCar()
 void ACustomCar::BeginPlay()
 {
 	Super::BeginPlay();	
+	if (!ShipCore->IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Error, TEXT("ShipCore is not valid!"));
+		return;
+	}
+	if (!ShipBody->IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
+		return;
+	}
+	if (ShipBody->bEditableWhenInherited)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ship body is editable by default"))
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ship body is NOT editable by default"))
+	}
 }
 
 
@@ -36,14 +54,9 @@ void ACustomCar::BeginPlay()
 // Called every frame
 void ACustomCar::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-		
-	if (!ShipBody->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
-		return;
-	}
-		
+	Super::Tick(DeltaTime);	
+
+	ApplySideFriction();	
 }
 
 
@@ -57,37 +70,87 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	{
 		PlayerInputComponent->BindAxis("Accelerate", this, &ACustomCar::Accelerate);
 		PlayerInputComponent->BindAxis("Steer", this, &ACustomCar::Steer);
+		PlayerInputComponent->BindAction("LeftBarrelRoll", IE_Pressed, this, &ACustomCar::LeftBarrelRoll);
+		PlayerInputComponent->BindAction("RightBarrelRoll", IE_Pressed, this, &ACustomCar::RightBarrelRoll);
 	}
 }
 
 
 void ACustomCar::Accelerate(float AxisValue)
 {
-	if (!ShipBody->IsValidLowLevel())
+	if (!ShipCore->IsValidLowLevel())
 	{
 		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("CustomCar.cpp accelerating: Acceleration: %f"), Acceleration)
+	
 	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
-	ShipBody->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
+	ShipCore->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	
 }
 
 void ACustomCar::Steer(float AxisValue)
 {
-	if (!ShipBody->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
-		return;
-	}
-	UE_LOG(LogTemp, Warning, TEXT("CustomCar.cpp steering"))
+	
 	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
 
-	ShipBody->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
-	ShipBody->AddTorque(-GetActorForwardVector()*BankingTorque*AxisValue);
+	ShipCore->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
+
+	
+	/*if (ShipBody->GetComponentRotation().Roll < 10)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Banking"))
+		ShipBody->AddTorque(ShipBody->GetForwardVector()*BankingTorque*AxisValue);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Banking On Hold"))
+	}*/
 	//SphereComponent->AddLocalRotation(steer);
 	//ShipBody->AddLocalRotation(steer);
 	//AddActorLocalRotation(steer);
+}
+
+void ACustomCar::ApplySideFriction()
+{
+	float fwdVelocityAmount = FVector::DotProduct(GetVelocity(), GetActorForwardVector());
+	FVector fwdVelocity = fwdVelocityAmount * GetActorForwardVector();
+	float rightVelocityAmount = FVector::DotProduct(GetVelocity(), GetActorRightVector());
+	FVector rightVelocity = rightVelocityAmount * GetActorRightVector();
+	
+
+	
+	
+	ShipCore->AddForce(SideFriction*(-1)*rightVelocity);
+
+	DrawDebugLine(GetWorld(),
+		GetActorLocation(),
+		GetActorLocation() + SideFriction * (-1)*rightVelocity,
+		FColor::Red,
+		false,
+		0,
+		0,
+		5);
+
+	DrawDebugLine(GetWorld(),
+		GetActorLocation(),
+		GetActorLocation() + fwdVelocity,
+		FColor::Green,
+		false,
+		0,
+		0,
+		5);
+}
+
+void ACustomCar::LeftBarrelRoll()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Left Barrel Roll"));
+	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(-10));
+}
+
+void ACustomCar::RightBarrelRoll()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Right Barrel Roll"));
+	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(10));
 }
 
