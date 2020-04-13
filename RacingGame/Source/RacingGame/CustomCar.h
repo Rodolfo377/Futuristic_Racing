@@ -37,6 +37,8 @@ public:
 	void LeftBarrelRoll();
 	//Adds a quick clockwise rotation to the vehicle - Ship-Track alignment Testing purposes
 	void RightBarrelRoll();
+	//rolls vehicle back to align with track normal. 
+	void CounterBanking();
 
 	//Here the banking, tricks and other cosmetic transformations will be applied, without affecting the core movement of the ship
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,7 +58,7 @@ public:
 	double SteerRate = 1.0;
 	UPROPERTY(VisibleAnywhere)
 	double SteerTorque = 100000000.0;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	double BankingTorque = 50000000.0;
 
 	UPROPERTY(EditAnywhere)
@@ -68,8 +70,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
-	
+	UPROPERTY(EditAnywhere, Category = "Debug Log")
+		bool counterBankingDebug = false;
 	/*void ApplyFriction();
 	void ApplySidewaysFriction();
 

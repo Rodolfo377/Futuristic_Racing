@@ -57,6 +57,7 @@ void ACustomCar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);	
 
 	ApplySideFriction();	
+	//CounterBanking();
 }
 
 
@@ -92,21 +93,25 @@ void ACustomCar::Accelerate(float AxisValue)
 void ACustomCar::Steer(float AxisValue)
 {
 	
-	FRotator steer = FRotator(0, AxisValue * SteerRate, 0);
+	
 
 	ShipCore->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
 
-	
-	/*if (ShipBody->GetComponentRotation().Roll < 10)
+	double angle = (GetActorRotation().Roll - ShipBody->GetComponentRotation().Roll)*GetWorld()->DeltaTimeSeconds;
+
+	if (counterBankingDebug)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Banking"))
-		ShipBody->AddTorque(ShipBody->GetForwardVector()*BankingTorque*AxisValue);
+		UE_LOG(LogTemp, Warning, TEXT("Banking"));
+		UE_LOG(LogTemp, Warning, TEXT("counter banking angle: %f actor roll: %f, shipBody roll: %f, dt: %f"),
+			angle,
+			GetActorRotation().Roll,
+			ShipBody->GetComponentRotation().Roll,
+			GetWorld()->DeltaTimeSeconds);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Banking On Hold"))
-	}*/
+
 	//SphereComponent->AddLocalRotation(steer);
+	FQuat banking = FQuat(GetActorForwardVector(), -angle +(-5)*AxisValue*GetWorld()->DeltaTimeSeconds);
+	ShipBody->AddWorldRotation(banking);
 	//ShipBody->AddLocalRotation(steer);
 	//AddActorLocalRotation(steer);
 }
@@ -117,9 +122,6 @@ void ACustomCar::ApplySideFriction()
 	FVector fwdVelocity = fwdVelocityAmount * GetActorForwardVector();
 	float rightVelocityAmount = FVector::DotProduct(GetVelocity(), GetActorRightVector());
 	FVector rightVelocity = rightVelocityAmount * GetActorRightVector();
-	
-
-	
 	
 	ShipCore->AddForce(SideFriction*(-1)*rightVelocity);
 
@@ -152,5 +154,14 @@ void ACustomCar::RightBarrelRoll()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Right Barrel Roll"));
 	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(10));
+}
+
+void ACustomCar::CounterBanking()
+{
+	double angle = (GetActorRotation().Roll - ShipBody->GetComponentRotation().Roll)*GetWorld()->DeltaTimeSeconds*1.2;
+
+
+	FQuat banking = FQuat(GetActorForwardVector(), -angle);
+	ShipBody->AddWorldRotation(banking);
 }
 
