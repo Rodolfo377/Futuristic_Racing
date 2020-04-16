@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include <vector>
 #include "CustomCar.generated.h"
 
 
@@ -40,6 +41,9 @@ public:
 	//rolls vehicle back to align with track normal. 
 	void CounterBanking();
 
+
+
+
 	//Here the banking, tricks and other cosmetic transformations will be applied, without affecting the core movement of the ship
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ShipBody = nullptr;
@@ -49,14 +53,20 @@ public:
 	UStaticMeshComponent* ShipCore = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	bool sideFrictionDraw = false;
+	bool SideFrictionDraw = false;
 
+	UFUNCTION(BlueprintCallable)
+	int CheckCurrentLap() { return CurrentLap; }
+	//Updates array of checkpoints completed when a custom car object overlaps with a checkpoint object. 
+	//FIFO container.
+	//@ id: unique id of checkpoint [1,3]
+	void UpdateCheckpoint(uint32 checkpointId);
 
 	UPROPERTY(EditAnywhere)
 	double Acceleration = 600000.0;
 	UPROPERTY(VisibleAnywhere)
 	double SteerRate = 1.0;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	double SteerTorque = 100000000.0;
 	UPROPERTY(EditAnywhere)
 	double BankingTorque = 50000000.0;
@@ -66,15 +76,21 @@ public:
 	//twice the acceleration of normal gravity
 
 	FVector CurrentVelocity;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+	int CurrentLap = 1;
+
+	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = "Debug Log")
-		bool counterBankingDebug = false;
-	/*void ApplyFriction();
-	void ApplySidewaysFriction();
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+		bool BankingDebug = false;
+	UPROPERTY(EditAnywhere, Category = "Debugging")
+		double BarrelRollTorque = 10;
 
-	//Should be twice as strong as normal gravity. Will always pull the ship down on its local vetor space.
-	void ApplyCustomGravity();*/
+	std::vector<int> Checkpoints = { 0 ,0 ,0 };
+	
 };

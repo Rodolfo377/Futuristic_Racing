@@ -23,10 +23,10 @@ void UACO_Hover::BeginPlay()
 	Super::BeginPlay();
 	Owner = GetOwner();
 	FlyingCar = (ACustomCar*)Owner;
-	
 
+	
 	SetupInputComponent();
-	SetupPhysicsHandle();	
+	
 }
 
 // Called every frame
@@ -43,21 +43,12 @@ void UACO_Hover::SetupInputComponent()
 	
 }
 
-void UACO_Hover::SetupPhysicsHandle()
-{
-	PhysicsHandle = Owner->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("At Object: %s Physics Handle component missing."), *GetOwner()->GetName());
-	}
-}
 
 
 
 void UACO_Hover::PIDControl()
 {
 	double deltaTime = GetWorld()->DeltaTimeSeconds*1000;
-	UE_LOG(LogTemp, Warning, TEXT("deltaTime: %f"), deltaTime)
 
 	if (deltaTime >= TimeSample)
 	{
@@ -84,9 +75,6 @@ void UACO_Hover::PIDControl()
 		}
 		//TODO: Draw Graph for P, I, D and Control Signal.
 
-		UE_LOG(LogTemp, Warning, TEXT("Control Signal: %f"), ControlSignal)
-		UE_LOG(LogTemp, Warning, TEXT("Current error: %f"), currentError)
-
 		LastError = currentError;		
 	}
 }
@@ -104,7 +92,7 @@ void UACO_Hover::ApplyHoverForce()
 		CurrentVehicleHeight = Hit.Distance;
 		groundNormal = Hit.Normal;
 	
-		FVector totalHoverForce = groundNormal * HoverForceAmount * forcePercent;
+		FVector totalHoverForce = groundNormal * (HoverForceAmount) * forcePercent;
 		//UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), totalHoverForce.X, totalHoverForce.Y, totalHoverForce.Z);
 		//Apply hover force
 		FlyingCar->ShipCore->AddForce(totalHoverForce);
@@ -130,6 +118,8 @@ void UACO_Hover::ApplyCustomGravity()
 			groundNormal = Hit.Normal;
 			FVector downwardsForce = (-1)*groundNormal * HoverGravity * CurrentVehicleHeight;
 			
+			CustomGravityMagnitude = downwardsForce.Size();
+
 			ApplyHoverForce();
 			FlyingCar->ShipCore->AddForce(downwardsForce);
 			AlignShipTrack(groundNormal);
@@ -170,10 +160,10 @@ void UACO_Hover::AlignShipTrack(FVector groundNormal)
 			FVector fwdRot = FVector::CrossProduct(fwdVector, newFwdVector);
 			FVector upRot = FVector::CrossProduct(upVector, newUpVector);
 
-			UE_LOG(LogTemp, Warning, TEXT("crossProduct (%f, %f, %f)"), fwdRot.X, fwdRot.Y, fwdRot.Z);
 
 			FlyingCar->ShipCore->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
 			FlyingCar->ShipCore->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
+			
 		}
 	else
 	{
@@ -212,9 +202,9 @@ FHitResult UACO_Hover::RaycastToFloor()
 
 	
 
-	FHitResult Hit;
+	FHitResult hit;
 	GetWorld()->LineTraceSingleByObjectType(
-		Hit,
+		hit,
 		p1,
 		p2,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
@@ -222,7 +212,7 @@ FHitResult UACO_Hover::RaycastToFloor()
 
 	
 
-	return Hit;
+	return hit;
 }
 
 

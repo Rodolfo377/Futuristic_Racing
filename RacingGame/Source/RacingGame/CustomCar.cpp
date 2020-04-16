@@ -22,7 +22,24 @@ ACustomCar::ACustomCar()
 	//set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+}
 
+void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
+{
+	if (Checkpoints.size() == 3)
+	{
+		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
+		{
+			CurrentLap++;
+		}
+
+		if (Checkpoints[2] != checkpointId)
+		{
+			Checkpoints[0] = Checkpoints[1];
+			Checkpoints[1] = Checkpoints[2];
+			Checkpoints[2] = checkpointId;
+		}
+	}
 }
 
 // Called when the game starts or when spawned
@@ -93,13 +110,11 @@ void ACustomCar::Accelerate(float AxisValue)
 void ACustomCar::Steer(float AxisValue)
 {
 	
-	
-
 	ShipCore->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
 
 	double angle = (GetActorRotation().Roll - ShipBody->GetComponentRotation().Roll)*GetWorld()->DeltaTimeSeconds;
 
-	if (counterBankingDebug)
+	if (BankingDebug)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Banking"));
 		UE_LOG(LogTemp, Warning, TEXT("counter banking angle: %f actor roll: %f, shipBody roll: %f, dt: %f"),
@@ -112,8 +127,7 @@ void ACustomCar::Steer(float AxisValue)
 	//SphereComponent->AddLocalRotation(steer);
 	FQuat banking = FQuat(GetActorForwardVector(), -angle +(-5)*AxisValue*GetWorld()->DeltaTimeSeconds);
 	ShipBody->AddWorldRotation(banking);
-	//ShipBody->AddLocalRotation(steer);
-	//AddActorLocalRotation(steer);
+
 }
 
 void ACustomCar::ApplySideFriction()
@@ -147,21 +161,14 @@ void ACustomCar::ApplySideFriction()
 void ACustomCar::LeftBarrelRoll()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Left Barrel Roll"));
-	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(-10));
+	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
 }
 
 void ACustomCar::RightBarrelRoll()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Right Barrel Roll"));
-	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(10));
+	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
 }
 
-void ACustomCar::CounterBanking()
-{
-	double angle = (GetActorRotation().Roll - ShipBody->GetComponentRotation().Roll)*GetWorld()->DeltaTimeSeconds*1.2;
 
-
-	FQuat banking = FQuat(GetActorForwardVector(), -angle);
-	ShipBody->AddWorldRotation(banking);
-}
 

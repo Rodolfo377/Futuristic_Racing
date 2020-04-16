@@ -21,7 +21,6 @@ public:
 	// Sets default values for this component's properties
 	UACO_Hover();
 	void SetupInputComponent();
-	void SetupPhysicsHandle();
 	void PIDControl();
 	void ApplyHoverForce();
 	void ApplyCustomGravity();
@@ -42,38 +41,42 @@ public:
 		UInputComponent* InputComponent = nullptr;
 
 
-	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Proportional gain
-		double Kp = 10;
-	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
+		float Kp = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Integral gain
-		double Ki = 2;
-	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
+		float Ki = 2;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Derivative gain
-		double Kd = 1;
+		float Kd = 1;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: setpoint
-		double Setpoint = 300;
+		float Setpoint = 150;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: min_control
-		double MinControl = 0.9;
+		float MinControl = 0.9;
 	UPROPERTY(VisibleAnywhere, Category = "PID Control Variables")
 		//aka: max_control
-		double MaxControl = 1;
+		float MaxControl = 1;
 	UPROPERTY(VisibleAnywhere, Category = "PID Control Variables")
 		//aka: T
-		double TimeSample = 15;
-
+		float TimeSample = 15;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
+		float ControlSignal = 0;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
 		double FallGravity = 1000000.0;
-	UPROPERTY(EditAnywhere, Category = "Hovering Variables")
-		double HoverForceAmount = 400000.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Hovering Variables")
+		float HoverForceAmount = 400000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
 		double HoverGravity = 2000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
 		double RaycastReach = 400.0;
 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Debugging")
+		float CustomGravityMagnitude = 0;
 
 	//Tweakable value for pitch alignment with track
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
@@ -85,8 +88,8 @@ public:
 
 	//Order of magnitude of Torque alignment - should NOT be changed
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
-		double TorqueAlignScale = 10000000.0;
-	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+		double TorqueAlignScale = 1000000.0;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -97,8 +100,5 @@ private:
 	double LastError = 0;
 	//sensed_output
 	double CurrentVehicleHeight = 0;
-	double ControlSignal = 0;
-	FHitResult m_Hit;
 	double slerpRotT = 0;
-
 };
