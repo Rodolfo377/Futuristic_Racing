@@ -43,45 +43,25 @@ void UACO_Hover::SetupInputComponent()
 	
 }
 
-
-
-
+//Second Implementation: 16/04/2020
 void UACO_Hover::PIDControl()
 {
-	double deltaTime = GetWorld()->DeltaTimeSeconds*1000;
+	float deltaTime = GetWorld()->DeltaTimeSeconds;
+	float proportional = Setpoint - CurrentVehicleHeight;
 
-	if (deltaTime >= TimeSample)
-	{
-		double currentError = Setpoint - CurrentVehicleHeight;
-		TotalError += currentError;
-		if (TotalError >= MaxControl)
-		{
-			TotalError = MaxControl;
-		}
-		else if (TotalError <= MinControl)
-		{
-			TotalError = MinControl;
-		}
+	float derivative = (proportional - lastProportional) / deltaTime;
+	integral += proportional * deltaTime;
+	lastProportional = proportional;
 
-		double deltaError = currentError - LastError;
-		ControlSignal = Kp * currentError + (Ki*TimeSample)*TotalError + (Kd / TimeSample)*deltaError;
-		if (ControlSignal >= MaxControl)
-		{
-			ControlSignal = MaxControl;
-		}
-		else if (ControlSignal <= MinControl)
-		{
-			ControlSignal = MinControl;
-		}
-		//TODO: Draw Graph for P, I, D and Control Signal.
+	ControlSignal = Kp * proportional + Ki * integral + Kd * derivative;
+	ControlSignal = FMath::Clamp(ControlSignal, MinControl, MaxControl);
 
-		LastError = currentError;		
-	}
+	
 }
 
 void UACO_Hover::ApplyHoverForce()
 {
-	PIDControl();	
+	PIDControl();
 	//local variable for adjusting the force of the thruster for the hovering
 	double forcePercent = ControlSignal;
 
@@ -116,7 +96,7 @@ void UACO_Hover::ApplyCustomGravity()
 		{
 			//Apply custom gravity
 			groundNormal = Hit.Normal;
-			FVector downwardsForce = (-1)*groundNormal * HoverGravity * CurrentVehicleHeight;
+			FVector downwardsForce = (-1)*groundNormal * HoverGravity;
 			
 			CustomGravityMagnitude = downwardsForce.Size();
 

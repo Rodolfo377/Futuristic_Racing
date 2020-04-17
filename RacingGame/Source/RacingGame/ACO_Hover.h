@@ -38,37 +38,37 @@ public:
 	ACustomCar* FlyingCar = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
-		UInputComponent* InputComponent = nullptr;
+	UInputComponent* InputComponent = nullptr;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Proportional gain
-		float Kp = 10;
+		float Kp = 0.02;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Integral gain
-		float Ki = 2;
+		float Ki = 0.002;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Derivative gain
-		float Kd = 1;
+		float Kd = 0.02;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: setpoint
-		float Setpoint = 150;
+		float Setpoint = 200;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: min_control
-		float MinControl = 0.9;
-	UPROPERTY(VisibleAnywhere, Category = "PID Control Variables")
+		float MinControl = -4;
+	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: max_control
-		float MaxControl = 1;
+		float MaxControl = 4;
 	UPROPERTY(VisibleAnywhere, Category = "PID Control Variables")
 		//aka: T
-		float TimeSample = 15;
+		float TimeSample = 0.015;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		float ControlSignal = 0;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
-		double FallGravity = 1000000.0;
+	UPROPERTY(EditAnywhere, Category = "Hovering Variables")
+		double FallGravity = 900000.0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Hovering Variables")
-		float HoverForceAmount = 400000.0;
+		float HoverForceAmount = 500000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
 		double HoverGravity = 2000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
@@ -89,6 +89,9 @@ public:
 	//Order of magnitude of Torque alignment - should NOT be changed
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
 		double TorqueAlignScale = 1000000.0;
+
+
+
 	
 protected:
 	// Called when the game starts
@@ -96,9 +99,10 @@ protected:
 
 private:
 	///PID control variables
+	float lastProportional = 0;
+	float integral = 0;
+
 	double TotalError = 0;
 	double LastError = 0;
-	//sensed_output
 	double CurrentVehicleHeight = 0;
-	double slerpRotT = 0;
 };
