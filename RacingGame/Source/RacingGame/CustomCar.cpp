@@ -10,9 +10,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
 
-#define OUT
+#define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
+
 // Sets default values
 ACustomCar::ACustomCar()
 {
@@ -102,6 +104,8 @@ void ACustomCar::Accelerate(float AxisValue)
 		return;
 	}
 	
+	//MovementComponent->AddInputVector(FVector(GetActorForwardVector()*Acceleration*AxisValue), true);
+	//MovementComponent->AddInputVector(FVector(1, 0, 0), true);
 	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	ShipCore->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
 	
@@ -109,24 +113,30 @@ void ACustomCar::Accelerate(float AxisValue)
 
 void ACustomCar::Steer(float AxisValue)
 {
-	
+	//steering
 	ShipCore->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
 
-	double angle = (GetActorRotation().Roll - ShipBody->GetComponentRotation().Roll)*GetWorld()->DeltaTimeSeconds;
+	//banking
+	FQuat banking = FQuat(ShipCore->GetForwardVector(), (60)*(PI/180));
+	
 
-	if (BankingDebug)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Banking"));
-		UE_LOG(LogTemp, Warning, TEXT("counter banking angle: %f actor roll: %f, shipBody roll: %f, dt: %f"),
-			angle,
-			GetActorRotation().Roll,
-			ShipBody->GetComponentRotation().Roll,
-			GetWorld()->DeltaTimeSeconds);
-	}
+	//ShipBody->AddWorldRotation(banking);
+	//ShipBody->SetWorldRotation(banking);	
+	//ShipBody->AddRelativeRotation(FQuat(GetActorRotation())*banking);
+	ShipBody->SetRelativeRotation(FQuat::Slerp(FQuat(ShipBody->RelativeRotation), FQuat(FRotator(0, 0, 45*AxisValue)), 0.01));
 
-	//SphereComponent->AddLocalRotation(steer);
-	FQuat banking = FQuat(GetActorForwardVector(), -angle +(-5)*AxisValue*GetWorld()->DeltaTimeSeconds);
-	ShipBody->AddWorldRotation(banking);
+	//Quat(GetActorRotation), FQuat(FRotator(0, 0, 30 * AxisValue), 0.1)
+	/*FVector fwd = GetActorForwardVector();
+	UE_LOG(LogTemp, Warning, TEXT(""))
+	
+		printFString()
+
+	FQuat currentRotation = FQuat(ShipBody->GetComponentRotation());
+	FQuat desiredRotation = FQuat(GetActorForwardVector(),
+		FMath::DegreesToRadians(AxisValue*(-30)));
+
+	//ShipBody->AddWorldRotation(FQuat::Slerp(currentRotation, desiredRotation, 0.01));
+	ShipBody->SetWorldRotation(FQuat::Slerp(currentRotation, desiredRotation, 0.01));*/
 
 }
 
@@ -139,35 +149,21 @@ void ACustomCar::ApplySideFriction()
 	
 	ShipCore->AddForce(SideFriction*(-1)*rightVelocity);
 
-	DrawDebugLine(GetWorld(),
-		GetActorLocation(),
-		GetActorLocation() + SideFriction * (-1)*rightVelocity,
-		FColor::Red,
-		false,
-		0,
-		0,
-		5);
 
-	DrawDebugLine(GetWorld(),
-		GetActorLocation(),
-		GetActorLocation() + fwdVelocity,
-		FColor::Green,
-		false,
-		0,
-		0,
-		5);
 }
+
+
 
 void ACustomCar::LeftBarrelRoll()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Left Barrel Roll"));
-	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
+	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
 }
 
 void ACustomCar::RightBarrelRoll()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Right Barrel Roll"));
-	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
+	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
 }
 
 
