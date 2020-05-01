@@ -20,6 +20,8 @@ class RACINGGAME_API UACO_Hover : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_Hover();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	void SetupInputComponent();
 	void PIDControl();
 	void ApplyHoverForce();
@@ -31,11 +33,11 @@ public:
 	FHitResult RaycastToFloor();
 
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	AActor* Owner = nullptr;
 
-	ACustomCar* FlyingCar = nullptr;
+	
+
+	ACustomCar* Owner = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
 	UInputComponent* InputComponent = nullptr;

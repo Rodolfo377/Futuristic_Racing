@@ -21,12 +21,14 @@ UACO_Hover::UACO_Hover()
 void UACO_Hover::BeginPlay()
 {
 	Super::BeginPlay();
-	Owner = GetOwner();
-	FlyingCar = (ACustomCar*)Owner;
+	Owner = (ACustomCar*)GetOwner();
+	
+	if (!Owner->IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Owner actor detected!"))
+	}
 
-	
-	SetupInputComponent();
-	
+	SetupInputComponent();	
 }
 
 // Called every frame
@@ -75,7 +77,7 @@ void UACO_Hover::ApplyHoverForce()
 		FVector totalHoverForce = groundNormal * (HoverForceAmount) * forcePercent;
 		//UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), totalHoverForce.X, totalHoverForce.Y, totalHoverForce.Z);
 		//Apply hover force
-		FlyingCar->ShipCore->AddForce(totalHoverForce);
+		Owner->ShipCore->AddForce(totalHoverForce);
 	}
 	
 }
@@ -101,7 +103,7 @@ void UACO_Hover::ApplyCustomGravity()
 			CustomGravityMagnitude = downwardsForce.Size();
 
 			ApplyHoverForce();
-			FlyingCar->ShipCore->AddForce(downwardsForce);
+			Owner->ShipCore->AddForce(downwardsForce);
 			AlignShipTrack(groundNormal);
 			DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
 		}
@@ -116,10 +118,10 @@ void UACO_Hover::ApplyCustomGravity()
 		//Apply gravity downwards
 		UE_LOG(LogTemp, Warning, TEXT("Flying"));
 		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
-		FlyingCar->ShipCore->AddForce(FVector(0, 0, -FallGravity));
+		Owner->ShipCore->AddForce(FVector(0, 0, -FallGravity));
 		//align vehicle's up with world up
-		FVector worldUpCross = FVector::CrossProduct(FlyingCar->GetActorUpVector(), FVector(0, 0, 1));
-		FlyingCar->ShipCore->AddTorque(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
+		FVector worldUpCross = FVector::CrossProduct(Owner->GetActorUpVector(), FVector(0, 0, 1));
+		Owner->ShipCore->AddTorque(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
 
 	}
 	
@@ -127,8 +129,8 @@ void UACO_Hover::ApplyCustomGravity()
 
 void UACO_Hover::AlignShipTrack(FVector groundNormal)
 {
-		FVector upVector = FlyingCar->GetActorUpVector();
-		FVector fwdVector = FlyingCar->GetActorForwardVector();
+		FVector upVector = Owner->GetActorUpVector();
+		FVector fwdVector = Owner->GetActorForwardVector();
 		FVector projectionOnTrack;
 		if (groundNormal.Size() != 0)
 		{
@@ -141,8 +143,8 @@ void UACO_Hover::AlignShipTrack(FVector groundNormal)
 			FVector upRot = FVector::CrossProduct(upVector, newUpVector);
 
 
-			FlyingCar->ShipCore->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
-			FlyingCar->ShipCore->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
+			Owner->ShipCore->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
+			Owner->ShipCore->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
 			
 		}
 	else
@@ -157,7 +159,7 @@ FVector  UACO_Hover::GetReachLineStart()
 	FVector PlayerPosition;
 	FRotator PlayerRotation;
 	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerPosition, OUT PlayerRotation);
-	PlayerPosition = FlyingCar->GetActorLocation();
+	PlayerPosition = Owner->GetActorLocation();
 
 
 	return PlayerPosition;
@@ -168,14 +170,14 @@ FVector  UACO_Hover::GetReachLineEnd()
 	FVector PlayerPosition;
 	FRotator PlayerRotation;
 	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerPosition, OUT PlayerRotation);
-	PlayerPosition = FlyingCar->GetActorLocation();
+	PlayerPosition = Owner->GetActorLocation();
 
-	return PlayerPosition - FlyingCar->GetActorUpVector()*RaycastReach;
+	return PlayerPosition - Owner->GetActorUpVector()*RaycastReach;
 }
 
 FHitResult UACO_Hover::RaycastToFloor()
 {
-	FCollisionQueryParams TraceParams(FName(TEXT("")), false, FlyingCar);
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, Owner);
 
 	FVector p1 = GetReachLineStart();
 	FVector p2 = GetReachLineEnd();

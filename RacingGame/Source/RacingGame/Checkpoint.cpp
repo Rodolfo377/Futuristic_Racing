@@ -24,7 +24,6 @@ void ACheckpoint::OnOverlapBegin(AActor * OverlappedActor, AActor * OtherActor)
 	if (vehicle->IsValidLowLevel())
 	{
 		vehicle->UpdateCheckpoint(m_CheckpointId);
-		printFString("Other Actor %s: ", *OtherActor->GetName());
 	}
 }
 

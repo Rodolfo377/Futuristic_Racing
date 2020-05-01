@@ -10,9 +10,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ACO_CarEngine.h"
+#include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
 
-#define OUT
+#define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
+
 // Sets default values
 ACustomCar::ACustomCar()
 {
@@ -22,6 +25,7 @@ ACustomCar::ACustomCar()
 	//set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
 }
 
 void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
@@ -73,8 +77,6 @@ void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 
-	ApplySideFriction();	
-	//CounterBanking();
 }
 
 
@@ -84,91 +86,14 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (PlayerInputComponent)
+	if (PlayerInputComponent && CarEngine)
 	{
-		PlayerInputComponent->BindAxis("Accelerate", this, &ACustomCar::Accelerate);
-		PlayerInputComponent->BindAxis("Steer", this, &ACustomCar::Steer);
-		PlayerInputComponent->BindAction("LeftBarrelRoll", IE_Pressed, this, &ACustomCar::LeftBarrelRoll);
-		PlayerInputComponent->BindAction("RightBarrelRoll", IE_Pressed, this, &ACustomCar::RightBarrelRoll);
+		PlayerInputComponent->BindAxis("Accelerate", CarEngine, &UACO_CarEngine::Accelerate);
+		PlayerInputComponent->BindAxis("Steer", CarEngine, &UACO_CarEngine::Steer);
+		PlayerInputComponent->BindAction("LeftBarrelRoll", IE_Pressed, CarEngine, &UACO_CarEngine::LeftBarrelRoll);
+		PlayerInputComponent->BindAction("RightBarrelRoll", IE_Pressed, CarEngine, &UACO_CarEngine::RightBarrelRoll);
+		
 	}
 }
-
-
-void ACustomCar::Accelerate(float AxisValue)
-{
-	if (!ShipCore->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
-		return;
-	}
-	
-	//SphereComponent->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
-	ShipCore->AddForce(FVector(GetActorForwardVector()*Acceleration*AxisValue));
-	
-}
-
-void ACustomCar::Steer(float AxisValue)
-{
-	
-	ShipCore->AddTorque(GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
-
-	double angle = (GetActorRotation().Roll - ShipBody->GetComponentRotation().Roll)*GetWorld()->DeltaTimeSeconds;
-
-	if (BankingDebug)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Banking"));
-		UE_LOG(LogTemp, Warning, TEXT("counter banking angle: %f actor roll: %f, shipBody roll: %f, dt: %f"),
-			angle,
-			GetActorRotation().Roll,
-			ShipBody->GetComponentRotation().Roll,
-			GetWorld()->DeltaTimeSeconds);
-	}
-
-	//SphereComponent->AddLocalRotation(steer);
-	FQuat banking = FQuat(GetActorForwardVector(), -angle +(-5)*AxisValue*GetWorld()->DeltaTimeSeconds);
-	ShipBody->AddWorldRotation(banking);
-
-}
-
-void ACustomCar::ApplySideFriction()
-{
-	float fwdVelocityAmount = FVector::DotProduct(GetVelocity(), GetActorForwardVector());
-	FVector fwdVelocity = fwdVelocityAmount * GetActorForwardVector();
-	float rightVelocityAmount = FVector::DotProduct(GetVelocity(), GetActorRightVector());
-	FVector rightVelocity = rightVelocityAmount * GetActorRightVector();
-	
-	ShipCore->AddForce(SideFriction*(-1)*rightVelocity);
-
-	DrawDebugLine(GetWorld(),
-		GetActorLocation(),
-		GetActorLocation() + SideFriction * (-1)*rightVelocity,
-		FColor::Red,
-		false,
-		0,
-		0,
-		5);
-
-	DrawDebugLine(GetWorld(),
-		GetActorLocation(),
-		GetActorLocation() + fwdVelocity,
-		FColor::Green,
-		false,
-		0,
-		0,
-		5);
-}
-
-void ACustomCar::LeftBarrelRoll()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Left Barrel Roll"));
-	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
-}
-
-void ACustomCar::RightBarrelRoll()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Right Barrel Roll"));
-	ShipCore->AddTorque(GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
-}
-
 
 
