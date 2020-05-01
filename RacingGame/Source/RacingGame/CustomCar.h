@@ -12,6 +12,8 @@
 class USphereComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UACO_CarEngine;
+
 
 UCLASS()
 class RACINGGAME_API ACustomCar : public APawn
@@ -29,19 +31,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	//Raycast to the floor to apply thrusters
-	//FHitResult RaycastToFloor();
-	void Accelerate(float AxisValue);
-	void Steer(float AxisValue);
-	void ApplySideFriction();
-
-	//Adds a quick counter-clockwise rotation to the vehicle - Ship-Track alignment Testing purposes
-	void LeftBarrelRoll();
-	//Adds a quick clockwise rotation to the vehicle - Ship-Track alignment Testing purposes
-	void RightBarrelRoll();
-
-
 
 
 	//Here the banking, tricks and other cosmetic transformations will be applied, without affecting the core movement of the ship
@@ -65,17 +54,8 @@ public:
 	//@ id: unique id of checkpoint [1,3]
 	void UpdateCheckpoint(uint32 checkpointId);
 
-	UPROPERTY(EditAnywhere)
-		double Acceleration = 600000.0;
-	UPROPERTY(VisibleAnywhere)
-		double SteerRate = 1.0;
-	UPROPERTY(EditAnywhere)
-		double SteerTorque = 100000000.0;
-	UPROPERTY(EditAnywhere)
-		double BankingTorque = 50000000.0;
 
-	UPROPERTY(EditAnywhere)
-		double SideFriction = 1000;
+	
 	//twice the acceleration of normal gravity
 
 	FVector CurrentVelocity;
@@ -87,11 +67,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = "Debugging")
-		bool BankingDebug = false;
-	UPROPERTY(EditAnywhere, Category = "Debugging")
-		double BarrelRollTorque = 10;
+
 
 	std::vector<int> Checkpoints = { 0 ,0 ,0 };
+
 	
+	//Component that will handle input-based movement: acceleration, steering, side friction. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UACO_CarEngine *CarEngine = nullptr;
 };
