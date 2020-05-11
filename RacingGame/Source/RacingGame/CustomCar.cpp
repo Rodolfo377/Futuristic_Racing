@@ -13,19 +13,24 @@
 #include "ACO_CarEngine.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
+#include "ACO_CarCollision.h"
+#include "Engine/StaticMeshActor.h"
 
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
+
+
 
 // Sets default values
 ACustomCar::ACustomCar()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	//set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
+	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));	
+	CarCollisionManager = CreateDefaultSubobject<UACO_CarCollision>(TEXT("CarCollision"));
 }
 
 void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
@@ -44,6 +49,24 @@ void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
 			Checkpoints[2] = checkpointId;
 		}
 	}
+}
+
+int ACustomCar::GetCurrentVelocity()
+{
+	CurrentVelocity = FVector::DotProduct(GetVelocity(), GetActorForwardVector()) / 10; //Convert into m/s
+
+	if (CurrentVelocity < 0)
+		CurrentVelocity *= (-1);
+
+	return CurrentVelocity;
+}
+
+void ACustomCar::TakeWallDamage(int speedFactor)
+{
+	CurrentEnergyLevel -= WallHitDamage;
+	//TODO: Add death event listener
+	if (CurrentEnergyLevel < 0)
+		CurrentEnergyLevel = 0;
 }
 
 // Called when the game starts or when spawned
@@ -68,6 +91,8 @@ void ACustomCar::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Ship body is NOT editable by default"))
 	}
+
+	CarCollisionManager->ResetPhysXParameters();
 }
 
 
@@ -76,7 +101,7 @@ void ACustomCar::BeginPlay()
 void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
-
+	
 }
 
 
@@ -93,6 +118,23 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		PlayerInputComponent->BindAction("LeftBarrelRoll", IE_Pressed, CarEngine, &UACO_CarEngine::LeftBarrelRoll);
 		PlayerInputComponent->BindAction("RightBarrelRoll", IE_Pressed, CarEngine, &UACO_CarEngine::RightBarrelRoll);
 		
+	}
+}
+
+void ACustomCar::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
+{
+	GLog->Log("On Hit");
+	GLog->Log(*OtherActor->GetName());
+	
+}
+
+void ACustomCar::NotifyHit(UPrimitiveComponent * MyComp, AActor * Other, UPrimitiveComponent * OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult & Hit)
+{
+	GLog->Log("Notify Hit");
+	GLog->Log(*Other->GetName());
+	if (Other->ActorHasTag("Wall"))
+	{
+		TakeWallDamage(1);
 	}
 }
 
