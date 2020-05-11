@@ -98,8 +98,7 @@ void UACO_Hover::ApplyCustomGravity()
 		{
 			//Apply custom gravity
 			groundNormal = Hit.Normal;
-			FVector downwardsForce = (-1)*groundNormal * HoverGravity;
-			
+			downwardsForce = (-1)*groundNormal * HoverGravity;
 			CustomGravityMagnitude = downwardsForce.Size();
 
 			ApplyHoverForce();
@@ -109,6 +108,8 @@ void UACO_Hover::ApplyCustomGravity()
 		}
 		else
 		{
+			//apply custom gravity in the last known downwards direction
+			Owner->ShipCore->AddForce(downwardsForce);
 			DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Magenta, false, 0, 0, 3);
 			UE_LOG(LogTemp, Warning, TEXT("Hit actor name: %s"), *Hit.Actor->GetName())
 		}

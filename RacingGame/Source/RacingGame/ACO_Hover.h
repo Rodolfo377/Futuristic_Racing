@@ -107,4 +107,5 @@ private:
 	double TotalError = 0;
 	double LastError = 0;
 	double CurrentVehicleHeight = 0;
+	FVector downwardsForce;
 };
