@@ -54,7 +54,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 		double Acceleration = 600000.0;
 	UPROPERTY(EditAnywhere)
-		double SteerRate = 3.0;
+		double SteerRate = 5.0;
 	UPROPERTY(EditAnywhere)
 		double SteerTorque = 10000000.0;
 	UPROPERTY(EditAnywhere)
@@ -66,6 +66,6 @@ protected:
 		double BarrelRollTorque = 10;
 
 	UPROPERTY(EditAnywhere)
-		double SideFriction = 900;
+		double SideFriction = 750;
 };
 

@@ -18,5 +18,10 @@
 			"Name": "GLTFImporter",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"WindowsNoEditor",
+		"LinuxNoEditor"
 	]
 }

@@ -51,7 +51,7 @@ public:
 		float Ki = 0.002;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Derivative gain
-		float Kd = 0.02;
+		float Kd = 0.002;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: setpoint
 		float Setpoint = 200;
@@ -70,7 +70,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Hovering Variables")
 		double FallGravity = 900000.0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Hovering Variables")
-		float HoverForceAmount = 500000.0;
+		float HoverForceAmount = 1200000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
 		double HoverGravity = 2000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
@@ -82,7 +82,7 @@ public:
 
 	//Tweakable value for pitch alignment with track
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
-		double TorquePitchAdjust = 5;
+		double TorquePitchAdjust = 35;
 
 	//Tweakable value for roll alignment with track
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")

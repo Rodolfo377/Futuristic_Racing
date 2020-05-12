@@ -89,7 +89,7 @@ void UACO_Hover::ApplyCustomGravity()
 
 	FVector p1 = GetReachLineStart();
 	FVector p2 = GetReachLineEnd();
-	DrawDebugLine(GetWorld(), p1, p2, FColor::Magenta);
+	//DrawDebugLine(GetWorld(), p1, p2, FColor::Magenta);
 
 	if (Hit.Actor->IsValidLowLevel())
 	{
@@ -104,13 +104,14 @@ void UACO_Hover::ApplyCustomGravity()
 			ApplyHoverForce();
 			Owner->ShipCore->AddForce(downwardsForce);
 			AlignShipTrack(groundNormal);
-			DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
+			//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
 		}
 		else
 		{
+			
 			//apply custom gravity in the last known downwards direction
-			Owner->ShipCore->AddForce(downwardsForce);
-			DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Magenta, false, 0, 0, 3);
+			Owner->ShipCore->AddForce(downwardsForce*1000);
+			//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Magenta, false, 0, 0, 3);
 			UE_LOG(LogTemp, Warning, TEXT("Hit actor name: %s"), *Hit.Actor->GetName())
 		}
 	}
@@ -122,7 +123,7 @@ void UACO_Hover::ApplyCustomGravity()
 		Owner->ShipCore->AddForce(FVector(0, 0, -FallGravity));
 		//align vehicle's up with world up
 		FVector worldUpCross = FVector::CrossProduct(Owner->GetActorUpVector(), FVector(0, 0, 1));
-		Owner->ShipCore->AddTorque(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
+		Owner->ShipCore->AddTorqueInRadians(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
 
 	}
 	
@@ -144,8 +145,8 @@ void UACO_Hover::AlignShipTrack(FVector groundNormal)
 			FVector upRot = FVector::CrossProduct(upVector, newUpVector);
 
 
-			Owner->ShipCore->AddTorque(fwdRot*TorqueAlignScale*TorquePitchAdjust);
-			Owner->ShipCore->AddTorque(upRot*TorqueAlignScale*TorqueRollAdjust);
+			Owner->ShipCore->AddTorqueInRadians(fwdRot*TorqueAlignScale*TorquePitchAdjust);
+			Owner->ShipCore->AddTorqueInRadians(upRot*TorqueAlignScale*TorqueRollAdjust);
 			
 		}
 	else

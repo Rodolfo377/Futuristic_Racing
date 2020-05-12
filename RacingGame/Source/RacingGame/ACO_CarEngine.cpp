@@ -50,7 +50,7 @@ void UACO_CarEngine::Accelerate(float AxisValue)
 void UACO_CarEngine::Steer(float AxisValue)
 {
 		//steering
-		Owner->ShipCore->AddTorque(Owner->GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
+		Owner->ShipCore->AddTorqueInRadians(Owner->GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
 
 		//banking
 		FQuat banking = FQuat(Owner->ShipCore->GetForwardVector(), (60)*(PI / 180));
@@ -59,12 +59,12 @@ void UACO_CarEngine::Steer(float AxisValue)
 
 void UACO_CarEngine::LeftBarrelRoll()
 {
-	Owner->ShipCore->AddTorque(Owner->GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
+	Owner->ShipCore->AddTorqueInRadians(Owner->GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
 }
 
 void UACO_CarEngine::RightBarrelRoll()
 {
-	Owner->ShipCore->AddTorque(Owner->GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
+	Owner->ShipCore->AddTorqueInRadians(Owner->GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
 }
 
 void  UACO_CarEngine::ApplySideFriction()

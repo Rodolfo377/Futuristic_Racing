@@ -4,11 +4,11 @@
 #include "ACO_CarCollision.h"
 #include "CustomCar.h"
 #include "Components/CapsuleComponent.h"
-#include "Physics/PhysicsInterfacePhysX.h"
+/*#include "Physics/PhysicsInterfacePhysX.h"
 #include "PhysicsEngine/BodyInstance.h"
 #include "ThirdParty/PhysX3/PhysX_3.4/Include/PxShape.h"
 #include "PhysicsCore/Public/PhysXPublicCore.h"
-#include <PxScene.h>
+#include <PxScene.h>*/
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
 
@@ -55,7 +55,7 @@ void UACO_CarCollision::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 void UACO_CarCollision::ResetPhysXParameters()
 {
 	//ShipCore->Bodyin
-	FPhysicsActorHandle *shipPhysicsActorHandle = &Owner->ShipCore->GetBodyInstance()->GetPhysicsActorHandle();
+	/*FPhysicsActorHandle *shipPhysicsActorHandle = &Owner->ShipCore->GetBodyInstance()->GetPhysicsActorHandle();
 	ensureAlways(shipPhysicsActorHandle);
 
 	PxScene *scene = shipPhysicsActorHandle->SyncActor->getScene();
@@ -94,6 +94,6 @@ void UACO_CarCollision::ResetPhysXParameters()
 			}
 		}
 	}
-	scene->unlockWrite();
+	scene->unlockWrite();*/
 }
 
