@@ -74,10 +74,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		bool SideFrictionDraw = false;
 
-	
-
-	
-	
 	//Component that will handle input-based movement: acceleration, steering, side friction. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UACO_CarEngine *CarEngine = nullptr;
