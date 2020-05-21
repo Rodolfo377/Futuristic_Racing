@@ -61,13 +61,7 @@ int ACustomCar::GetCurrentVelocity()
 	return CurrentVelocity;
 }
 
-void ACustomCar::TakeWallDamage(int speedFactor)
-{
-	CurrentEnergyLevel -= WallHitDamage;
-	//TODO: Add death event listener
-	if (CurrentEnergyLevel < 0)
-		CurrentEnergyLevel = 0;
-}
+
 
 // Called when the game starts or when spawned
 void ACustomCar::BeginPlay()

@@ -26,11 +26,11 @@ public:
 	void PIDControl();
 	void ApplyHoverForce();
 	void ApplyCustomGravity();
-	void AlignShipTrack(FVector groundNormal);
+	void AlignShipTrack();
 
-	FVector GetReachLineStart();
-	FVector GetReachLineEnd();
-	FHitResult RaycastToFloor();
+	FVector GetReachLineStart(FVector offset);
+	FVector GetReachLineEnd(FVector startPos);
+	FHitResult RaycastToFloor(FVector offset);
 
 	// Called every frame
 
@@ -45,13 +45,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Proportional gain
-		float Kp = 0.02;
+		float Kp = 0.1;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Integral gain
-		float Ki = 0.002;
+		float Ki = 0.0002;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Derivative gain
-		float Kd = 0.002;
+		float Kd = 0.01;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: setpoint
 		float Setpoint = 200;
@@ -68,7 +68,7 @@ public:
 		float ControlSignal = 0;
 	
 	UPROPERTY(EditAnywhere, Category = "Hovering Variables")
-		double FallGravity = 900000.0;
+		double FallGravity = 1200000.0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Hovering Variables")
 		float HoverForceAmount = 1200000.0;
 	UPROPERTY(VisibleAnywhere, Category = "Hovering Variables")
@@ -92,8 +92,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
 		double TorqueAlignScale = 1000000.0;
 
-
-
+	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
+		double GravityRaycastReach = 500;
 	
 protected:
 	// Called when the game starts
@@ -108,4 +108,7 @@ private:
 	double LastError = 0;
 	double CurrentVehicleHeight = 0;
 	FVector downwardsForce;
+	FVector TempGroundNormal;
+
+
 };

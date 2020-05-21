@@ -22,13 +22,12 @@ void UACO_Hover::BeginPlay()
 {
 	Super::BeginPlay();
 	Owner = (ACustomCar*)GetOwner();
-	
-	if (!Owner->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("No Owner actor detected!"))
-	}
 
-	SetupInputComponent();	
+	ensureAlways(Owner);
+
+	SetupInputComponent();
+
+
 }
 
 // Called every frame
@@ -36,13 +35,11 @@ void UACO_Hover::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	ApplyCustomGravity();
-	// ...
 }
 
 void UACO_Hover::SetupInputComponent()
 {
 	InputComponent = Owner->FindComponentByClass<UInputComponent>();
-	
 }
 
 //Second Implementation: 16/04/2020
@@ -57,8 +54,6 @@ void UACO_Hover::PIDControl()
 
 	ControlSignal = Kp * proportional + Ki * integral + Kd * derivative;
 	ControlSignal = FMath::Clamp(ControlSignal, MinControl, MaxControl);
-
-	
 }
 
 void UACO_Hover::ApplyHoverForce()
@@ -67,29 +62,30 @@ void UACO_Hover::ApplyHoverForce()
 	//local variable for adjusting the force of the thruster for the hovering
 	double forcePercent = ControlSignal;
 
-	FHitResult Hit = RaycastToFloor();
+	FHitResult Hit = RaycastToFloor(FVector(0, 0, 0));
 	FVector groundNormal;
 	if (Hit.bBlockingHit)//if hit ground
 	{
 		CurrentVehicleHeight = Hit.Distance;
 		groundNormal = Hit.Normal;
-	
-		FVector totalHoverForce = groundNormal * (HoverForceAmount) * forcePercent;
+
+		FVector totalHoverForce = groundNormal * (HoverForceAmount)* forcePercent;
 		//UE_LOG(LogTemp, Warning, TEXT("upwards force: (%f, %f, %f)"), totalHoverForce.X, totalHoverForce.Y, totalHoverForce.Z);
 		//Apply hover force
 		Owner->ShipCore->AddForce(totalHoverForce);
 	}
-	
 }
 
 void UACO_Hover::ApplyCustomGravity()
 {
 	//TODO: Save hit info on class member variable 
-	FHitResult Hit = RaycastToFloor();
+	FHitResult Hit = RaycastToFloor(FVector(0, 0, 0));
 
-	FVector p1 = GetReachLineStart();
-	FVector p2 = GetReachLineEnd();
-	//DrawDebugLine(GetWorld(), p1, p2, FColor::Magenta);
+	FVector p1 = GetReachLineStart(FVector(0, 0, 0));
+	FVector p2 = GetReachLineEnd(p1);
+
+	/*DrawDebugSphere(GetWorld(), p1, 10, 10, FColor::White);
+	DrawDebugSphere(GetWorld(), p2, 10, 10, FColor::Blue);*/
 
 	if (Hit.Actor->IsValidLowLevel())
 	{
@@ -101,54 +97,68 @@ void UACO_Hover::ApplyCustomGravity()
 			downwardsForce = (-1)*groundNormal * HoverGravity;
 			CustomGravityMagnitude = downwardsForce.Size();
 
+			TempGroundNormal = groundNormal;
+
 			ApplyHoverForce();
 			Owner->ShipCore->AddForce(downwardsForce);
-			AlignShipTrack(groundNormal);
+			AlignShipTrack();
 			//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
 		}
 		else
 		{
-			
 			//apply custom gravity in the last known downwards direction
-			Owner->ShipCore->AddForce(downwardsForce*1000);
+			Owner->ShipCore->AddForce(downwardsForce * 1000);
+			
+
+			UE_LOG(LogTemp, Warning, TEXT("Falling!"));
 			//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Magenta, false, 0, 0, 3);
-			UE_LOG(LogTemp, Warning, TEXT("Hit actor name: %s"), *Hit.Actor->GetName())
+
 		}
 	}
 	else//flying
 	{
-		//Apply gravity downwards
-		UE_LOG(LogTemp, Warning, TEXT("Flying"));
-		UE_LOG(LogTemp, Warning, TEXT("fall gravity force: %f)"), -FallGravity);
 		Owner->ShipCore->AddForce(FVector(0, 0, -FallGravity));
+		//Apply gravity downwards
+		//Owner->ShipCore->AddForce(FVector(0, 0, -FallGravity));
 		//align vehicle's up with world up
 		FVector worldUpCross = FVector::CrossProduct(Owner->GetActorUpVector(), FVector(0, 0, 1));
 		Owner->ShipCore->AddTorqueInRadians(worldUpCross*TorqueAlignScale*TorqueRollAdjust);
 
 	}
-	
+
 }
 
-void UACO_Hover::AlignShipTrack(FVector groundNormal)
+void UACO_Hover::AlignShipTrack()
 {
-		FVector upVector = Owner->GetActorUpVector();
-		FVector fwdVector = Owner->GetActorForwardVector();
-		FVector projectionOnTrack;
-		if (groundNormal.Size() != 0)
-		{
-			projectionOnTrack = fwdVector - (FVector::DotProduct(fwdVector, groundNormal)) / (pow(groundNormal.Size(), 2))*groundNormal;
+	FVector velocity = Owner->GetVelocity();
+	FVector p1 = GetReachLineStart(FVector(0, 0, 0));
+	FVector p2 = GetReachLineEnd(p1);
 
-			FVector newUpVector = groundNormal;
-			FVector newFwdVector = projectionOnTrack;
-
-			FVector fwdRot = FVector::CrossProduct(fwdVector, newFwdVector);
-			FVector upRot = FVector::CrossProduct(upVector, newUpVector);
+	DrawDebugSphere(GetWorld(), p1, 10, 10, FColor::Red);
+	DrawDebugSphere(GetWorld(), p2, 10, 10, FColor::Red);
 
 
-			Owner->ShipCore->AddTorqueInRadians(fwdRot*TorqueAlignScale*TorquePitchAdjust);
-			Owner->ShipCore->AddTorqueInRadians(upRot*TorqueAlignScale*TorqueRollAdjust);
-			
-		}
+	FHitResult Hit = RaycastToFloor(FVector(0, 0, 0));
+	FVector upVector = Owner->GetActorUpVector();
+	FVector fwdVector = Owner->GetActorForwardVector();
+	FVector projectionOnTrack;
+
+	FVector groundNormal = Hit.Normal;
+	FVector copiedNormal = TempGroundNormal;
+
+	if (groundNormal.Size() != 0)
+	{
+		projectionOnTrack = fwdVector - (FVector::DotProduct(fwdVector, groundNormal)) / (pow(groundNormal.Size(), 2))*groundNormal;
+
+		FVector newUpVector = groundNormal;
+		FVector newFwdVector = projectionOnTrack;
+
+		FVector fwdRot = FVector::CrossProduct(fwdVector, newFwdVector);
+		FVector upRot = FVector::CrossProduct(upVector, newUpVector);
+
+		Owner->ShipCore->AddTorqueInRadians(fwdRot*TorqueAlignScale*TorquePitchAdjust);
+		Owner->ShipCore->AddTorqueInRadians(upRot*TorqueAlignScale*TorqueRollAdjust);
+	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Avoided division by zero error!"));
@@ -156,47 +166,73 @@ void UACO_Hover::AlignShipTrack(FVector groundNormal)
 	}
 }
 
-FVector  UACO_Hover::GetReachLineStart()
+FVector  UACO_Hover::GetReachLineStart(FVector offset)
 {
 	FVector PlayerPosition;
 	FRotator PlayerRotation;
-	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerPosition, OUT PlayerRotation);
-	PlayerPosition = Owner->GetActorLocation();
-
+	PlayerPosition = Owner->GetActorLocation() + offset;
 
 	return PlayerPosition;
 }
 
-FVector  UACO_Hover::GetReachLineEnd()
+FVector  UACO_Hover::GetReachLineEnd(FVector startPos)
 {
 	FVector PlayerPosition;
 	FRotator PlayerRotation;
-	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerPosition, OUT PlayerRotation);
-	PlayerPosition = Owner->GetActorLocation();
 
-	return PlayerPosition - Owner->GetActorUpVector()*RaycastReach;
+	return startPos - Owner->GetActorUpVector()*RaycastReach;
 }
 
-FHitResult UACO_Hover::RaycastToFloor()
+FHitResult UACO_Hover::RaycastToFloor(FVector offset)
 {
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, Owner);
 
-	FVector p1 = GetReachLineStart();
-	FVector p2 = GetReachLineEnd();
+	/*FVector p1 = GetReachLineStart(offset);
+	FVector p2 = GetReachLineEnd(p1);*/
+
+	FHitResult closestHit;
+	closestHit.Distance = -1;
+
+	FHitResult allHits[4];
+	FVector origin = GetReachLineStart(offset);
+
+	FVector allFloorWhiskers[] = 
+	{(origin + (-Owner->GetActorUpVector() + Owner->GetActorForwardVector()) * GravityRaycastReach),
+	(origin + (-Owner->GetActorUpVector() - Owner->GetActorForwardVector() + Owner->GetActorRightVector()) * GravityRaycastReach),
+	(origin + (-Owner->GetActorUpVector() - Owner->GetActorForwardVector() - Owner->GetActorRightVector()) * GravityRaycastReach),
+	(origin + (Owner->GetActorUpVector()) * GravityRaycastReach)
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		DrawDebugLine(GetWorld(), origin, allFloorWhiskers[i], FColor::Purple);
+
+		
+		GetWorld()->LineTraceSingleByObjectType(
+			allHits[i],
+			origin,
+			allFloorWhiskers[i],
+			FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
+			TraceParams);
+	}
 
 	
+	for (int i = 0; i < 4; i++)
+	{
+		if (allHits[i].IsValidBlockingHit())
+		{
+			if (closestHit.Distance < 0)//set the closest distance to the first valid value
+			{
+				closestHit = allHits[i];
+			}
+			else if (allHits[i].Distance < closestHit.Distance)
+			{
+				closestHit = allHits[i];
+			}
+		}
+	}
 
-	FHitResult hit;
-	GetWorld()->LineTraceSingleByObjectType(
-		hit,
-		p1,
-		p2,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
-		TraceParams);
-
-	
-
-	return hit;
+	return closestHit;
 }
 
 
