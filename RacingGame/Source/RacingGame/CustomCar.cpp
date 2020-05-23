@@ -115,21 +115,6 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	}
 }
 
-void ACustomCar::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
-{
-	GLog->Log("On Hit");
-	GLog->Log(*OtherActor->GetName());
-	
-}
 
-void ACustomCar::NotifyHit(UPrimitiveComponent * MyComp, AActor * Other, UPrimitiveComponent * OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult & Hit)
-{
-	GLog->Log("Notify Hit");
-	GLog->Log(*Other->GetName());
-	if (Other->ActorHasTag("Wall"))
-	{
-		TakeWallDamage(1);
-	}
-}
 
 
