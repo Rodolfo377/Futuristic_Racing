@@ -21,15 +21,9 @@ UACO_CarEngine::UACO_CarEngine()
 void UACO_CarEngine::BeginPlay()
 {
 	Super::BeginPlay();
-	Owner = (ACustomCar*)GetOwner();
 
-	if (!Owner->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("No Owner actor detected!"))
-		return;
-	}
-	// ...
-	InputComponent = Owner->FindComponentByClass<UInputComponent>();
+	Owner = (ACustomCar*)GetOwner();
+	ensureAlways(Owner);
 }
 
 
@@ -49,22 +43,23 @@ void UACO_CarEngine::Accelerate(float AxisValue)
 
 void UACO_CarEngine::Steer(float AxisValue)
 {
-		//steering
-		Owner->ShipCore->AddTorqueInRadians(Owner->GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
+	//steering
+	Owner->ShipCore->AddTorqueInRadians(Owner->GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
 
-		//banking
-		FQuat banking = FQuat(Owner->ShipCore->GetForwardVector(), (60)*(PI / 180));
-		Owner->ShipBody->SetRelativeRotation(FQuat::Slerp(FQuat(Owner->ShipBody->RelativeRotation), FQuat(FRotator(0, 0, 45 * AxisValue)), 0.01));
+	//banking
+	FQuat banking = FQuat(Owner->ShipCore->GetForwardVector(), (60)*(PI / 180));
+	Owner->ShipBody->SetRelativeRotation(FQuat::Slerp(FQuat(Owner->ShipBody->RelativeRotation), FQuat(FRotator(0, 0, 70 * AxisValue)), 0.01));
 }
 
 void UACO_CarEngine::LeftBarrelRoll()
 {
-	Owner->ShipCore->AddTorqueInRadians(Owner->GetActorForwardVector()*SteerTorque*SteerRate*(BarrelRollTorque));
+
+		
 }
 
 void UACO_CarEngine::RightBarrelRoll()
 {
-	Owner->ShipCore->AddTorqueInRadians(Owner->GetActorForwardVector()*SteerTorque*SteerRate*(-BarrelRollTorque));
+	
 }
 
 void  UACO_CarEngine::ApplySideFriction()
