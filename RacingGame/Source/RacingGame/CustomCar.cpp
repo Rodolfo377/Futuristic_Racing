@@ -15,6 +15,7 @@
 #include "DrawDebugHelpers.h"
 #include "ACO_CarCollision.h"
 #include "Engine/StaticMeshActor.h"
+#include "AICustomCar_Controller.h"
 
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
 
@@ -96,6 +97,12 @@ void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 	
+	AAICustomCar_Controller* AIVehicle = Cast<AAICustomCar_Controller>(GetController());
+	//Test ai: move to player car
+	/*if (AIVehicle)
+	{
+		AIVehicle->
+	}*/
 }
 
 

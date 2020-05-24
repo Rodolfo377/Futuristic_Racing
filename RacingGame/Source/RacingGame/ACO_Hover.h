@@ -43,15 +43,15 @@ public:
 	UInputComponent* InputComponent = nullptr;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PID Control Variables")
 		//Proportional gain
-		float Kp = 0.1;
+		float Kp = 0.02;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Integral gain
-		float Ki = 0.0002;
+		float Ki = 0.0001;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PID Control Variables")
 		//Derivative gain
-		float Kd = 0.01;
+		float Kd = 0.0015;
 	UPROPERTY(EditAnywhere, Category = "PID Control Variables")
 		//aka: setpoint
 		float Setpoint = 200;

@@ -24,6 +24,7 @@ void UACO_CarEngine::BeginPlay()
 
 	Owner = (ACustomCar*)GetOwner();
 	ensureAlways(Owner);
+	
 }
 
 
@@ -31,12 +32,14 @@ void UACO_CarEngine::BeginPlay()
 void UACO_CarEngine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
 	ApplySideFriction();
 	// ...
 }
 
 void UACO_CarEngine::Accelerate(float AxisValue)
 {
+	ensureAlways(Owner->ShipCore);
 	Owner->ShipCore->AddForce(FVector(Owner->GetActorForwardVector()*Acceleration*AxisValue));
 	
 }
@@ -44,6 +47,8 @@ void UACO_CarEngine::Accelerate(float AxisValue)
 void UACO_CarEngine::Steer(float AxisValue)
 {
 	//steering
+	ensureAlways(Owner->ShipCore);
+	ensureAlways(Owner->ShipBody);
 	Owner->ShipCore->AddTorqueInRadians(Owner->GetActorUpVector()*SteerTorque*SteerRate*AxisValue);
 
 	//banking

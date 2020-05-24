@@ -3,26 +3,42 @@
 
 #include "AICustomCar_Controller.h"
 #include "Engine/World.h"
+#include "GameFramework/Pawn.h"
+#include "ACO_CarEngine.h"
+
 
 void AAICustomCar_Controller::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("AIController"));
 
-	ACustomCar* ControlledCar = nullptr;
-	ControlledCar = GetControlledCar();
+	ACustomCar* PlayerCar = nullptr;
+	PlayerCar = GetPlayerCar();
 
-	if (!ControlledCar)
+	if (!PlayerCar)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Car Pawn not possessed!"));
+		UE_LOG(LogTemp, Warning, TEXT("Player Car not found!"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("possessed pawn name: %s"), *ControlledCar->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Player Car found!: name: %s"), *PlayerCar->GetName());
+	}
+}
+
+void AAICustomCar_Controller::Tick(float DeltaTime)
+{
+	if (GetControlledCar())
+	{
+		GetControlledCar()->CarEngine->Accelerate(1.0f);
 	}
 }
 
 ACustomCar* AAICustomCar_Controller::GetControlledCar() const
 {
-	return Cast<ACustomCar>(GetWorld()->GetFirstPlayerController());
+	return Cast<ACustomCar>(GetPawn());
+}
+
+ACustomCar * AAICustomCar_Controller::GetPlayerCar() const
+{
+	return Cast<ACustomCar>(GetWorld()->GetFirstPlayerController()->GetPawn());
 }
