@@ -13,5 +13,10 @@ UCLASS()
 class RACINGGAME_API ARacingGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void StartMode() {};
+	virtual void PauseMode() {};
+	virtual void QuitMode() {};
+	virtual void CompleteMode() {};
+
 };
