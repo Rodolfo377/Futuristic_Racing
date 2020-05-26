@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ACO_CarEngine.h"
+#include "../../Public/ActorComponents/ACO_CarEngine.h"
 #include "Components/StaticMeshComponent.h"
-#include "CustomCar.h"
+#include "../../Public/Pawns/CustomCar.h"
 
 
 // Sets default values for this component's properties

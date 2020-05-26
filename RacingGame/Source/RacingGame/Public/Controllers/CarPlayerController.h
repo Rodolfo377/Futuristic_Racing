@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CustomCar.h"
+#include "../Pawns/CustomCar.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "CarPlayerController.generated.h"

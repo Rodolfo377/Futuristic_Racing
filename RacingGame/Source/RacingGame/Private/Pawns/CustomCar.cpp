@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CustomCar.h"
+#include "../../Public/Pawns/CustomCar.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -10,12 +10,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "ACO_CarEngine.h"
+#include "../../Public/ActorComponents/ACO_CarEngine.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
-#include "ACO_CarCollision.h"
+#include "../../Public/ActorComponents/ACO_CarCollision.h"
 #include "Engine/StaticMeshActor.h"
-#include "AICustomCar_Controller.h"
+
 
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
 
@@ -97,7 +97,7 @@ void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 	
-	AAICustomCar_Controller* AIVehicle = Cast<AAICustomCar_Controller>(GetController());
+	
 	//Test ai: move to player car
 	/*if (AIVehicle)
 	{

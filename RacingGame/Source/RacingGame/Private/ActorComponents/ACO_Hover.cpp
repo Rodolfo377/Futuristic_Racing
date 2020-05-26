@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ACO_Hover.h"
+#include "../../Public/ActorComponents/ACO_Hover.h"
 #include "Components/StaticMeshComponent.h"
-#include "CustomCar.h"
+#include "../../Public/Pawns/CustomCar.h"
 #include "Engine/World.h"
 #include "Engine/Canvas.h"
 

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ACO_CarCollision.h"
-#include "CustomCar.h"
+#include "../../Public/ActorComponents/ACO_CarCollision.h"
+#include "../../Public/Pawns/CustomCar.h"
 #include "Components/CapsuleComponent.h"
 /*#include "Physics/PhysicsInterfacePhysX.h"
 #include "PhysicsEngine/BodyInstance.h"

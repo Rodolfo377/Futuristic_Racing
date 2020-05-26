@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CarPlayerController.h"
-#include "CustomCar.h"
+#include "../../Public/Controllers/CarPlayerController.h"
+#include "../../Public/Pawns/CustomCar.h"
 
 void ACarPlayerController::BeginPlay()
 {

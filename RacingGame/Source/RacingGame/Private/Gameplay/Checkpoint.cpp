@@ -5,8 +5,8 @@
 
 
 
-#include "Checkpoint.h"
-#include "CustomCar.h"
+#include "../../Public/Gameplay/Checkpoint.h"
+#include "../../Public/Pawns/CustomCar.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
