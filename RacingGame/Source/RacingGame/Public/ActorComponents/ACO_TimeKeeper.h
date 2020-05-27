@@ -4,31 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <vector>
+#include "../../Public/Utilities/DebugLogger.h"
 #include "ACO_TimeKeeper.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RACINGGAME_API UACO_TimeKeeper : public UActorComponent
+struct LapTimes
 {
-	GENERATED_BODY()
-
-public:	
-	// Sets default values for this component's properties
-	UACO_TimeKeeper();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
-};
-
-/*struct LapTimes
-{
+	float firstWaypointTime = 0;
+	float lastWaypointTime = 0;
 	std::vector<float> waypointTimes;
 };
 
@@ -40,21 +23,32 @@ struct RaceTimes
 
 struct Timer
 {
+	RaceTimes raceClock;
 	float startTime = 0;
 	float currentTime = 0;
-	void Start();
-	void Update();
-	void Stop();
+	void Start(float CurrentWorldTime);
+	void Update(float DeltaTime);
+	void Stop(float FinalTime);
+
 };
-/**
- * Class for keeping timers within the race - Usable by different game modes
- 
-class RACINGGAME_API TimeKeeping
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class RACINGGAME_API UACO_TimeKeeper : public UActorComponent
 {
-public:
-	TimeKeeping();
-	~TimeKeeping();
+	GENERATED_BODY()
 
-	//virtual void TickComponent(float DeltaTime) override;
+public:	
+	// Sets default values for this component's properties
+	UACO_TimeKeeper();
+	Timer RaceTimer;
 
-}; */
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void StopLapTime();
+	void StopRaceTime();		
+};

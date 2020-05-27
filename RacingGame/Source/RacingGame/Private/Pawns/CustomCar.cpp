@@ -2,6 +2,7 @@
 
 
 #include "../../Public/Pawns/CustomCar.h"
+#include "../../Public/ActorComponents/ACO_TimeKeeper.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -32,6 +33,7 @@ ACustomCar::ACustomCar()
 
 	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));	
 	CarCollisionManager = CreateDefaultSubobject<UACO_CarCollision>(TEXT("CarCollision"));
+	CarTimeKeeper = CreateDefaultSubobject<UACO_TimeKeeper>(TEXT("TimeKeeper"));
 }
 
 void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
@@ -41,6 +43,7 @@ void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
 		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
 		{
 			CurrentLap++;
+			CarTimeKeeper->StopLapTime();
 		}
 
 		if (Checkpoints[2] != checkpointId)

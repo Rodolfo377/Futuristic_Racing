@@ -14,6 +14,7 @@ class UCameraComponent;
 class UACO_CarEngine;
 class AStaticMeshActor;
 class UACO_CarCollision;
+class UACO_TimeKeeper;
 
 UCLASS()
 class RACINGGAME_API ACustomCar : public APawn
@@ -77,7 +78,11 @@ public:
 	//Component that will handle input-based movement: acceleration, steering, side friction. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UACO_CarEngine *CarEngine = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UACO_CarCollision *CarCollisionManager = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UACO_TimeKeeper *CarTimeKeeper = nullptr;
+
 	//Measured in m/s (x10 for aesthetics - big speed numbers on screen woo)
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	int CurrentVelocity = 0;
