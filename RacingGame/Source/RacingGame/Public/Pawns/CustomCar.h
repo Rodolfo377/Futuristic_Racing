@@ -101,4 +101,6 @@ protected:
 	//How far below is the center of mass from the ship core mesh? (cm)
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
 		int CenterOfMassOffset = 200;
+	UPROPERTY(EditAnywhere, Category = "Scoring")
+		FString RacerName = "Bob";
 };

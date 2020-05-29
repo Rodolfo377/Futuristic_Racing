@@ -21,15 +21,17 @@ struct RaceTimes
 	std::vector<float> totalLapTimes;
 };
 
-struct Timer
+
+struct UTimer
 {
 	RaceTimes raceClock;
 	float startTime = 0;
 	float currentTime = 0;
+	float lastLapTime = 0;
+
 	void Start(float CurrentWorldTime);
 	void Update(float DeltaTime);
 	void Stop(float FinalTime);
-
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -40,7 +42,9 @@ class RACINGGAME_API UACO_TimeKeeper : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_TimeKeeper();
-	Timer RaceTimer;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)*/
+	UTimer RaceTimer;
 
 protected:
 	// Called when the game starts
@@ -48,7 +52,12 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	void StopLapTime();
-	void StopRaceTime();		
+	void StopRaceTime();
+	UFUNCTION(BlueprintCallable)
+	float GetLastLapTime();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<float> GetAllLapTimes();
 };

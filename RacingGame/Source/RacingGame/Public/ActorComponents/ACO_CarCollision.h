@@ -19,12 +19,8 @@ public:
 	UACO_CarCollision();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-
 	void ResetPhysXParameters();
-
 	ACustomCar* Owner = nullptr;
-
 	UCapsuleComponent *CapsuleCollider = nullptr;
 protected:
 	// Called when the game starts

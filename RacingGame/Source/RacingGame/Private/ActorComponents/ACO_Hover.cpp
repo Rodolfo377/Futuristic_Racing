@@ -134,8 +134,6 @@ void UACO_Hover::AlignShipTrack()
 	FVector p1 = GetReachLineStart(FVector(0, 0, 0));
 	FVector p2 = GetReachLineEnd(p1);
 
-	DrawDebugSphere(GetWorld(), p1, 10, 10, FColor::Red);
-	DrawDebugSphere(GetWorld(), p2, 10, 10, FColor::Red);
 
 
 	FHitResult Hit = RaycastToFloor(FVector(0, 0, 0));

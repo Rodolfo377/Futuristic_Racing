@@ -22,6 +22,8 @@
 
 
 
+
+
 // Sets default values
 ACustomCar::ACustomCar()
 {
@@ -40,6 +42,11 @@ void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
 {
 	if (Checkpoints.size() == 3)
 	{
+		if (Checkpoints[0] == 0 && Checkpoints[1] == 0 && Checkpoints[2] == 0)
+		{
+			CarTimeKeeper->RaceTimer.Start(GetWorld()->TimeSeconds);
+		}
+
 		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
 		{
 			CurrentLap++;
@@ -91,6 +98,12 @@ void ACustomCar::BeginPlay()
 	}
 
 	CarCollisionManager->ResetPhysXParameters();
+	SetCenterOfMass();
+}
+
+void ACustomCar::SetCenterOfMass()
+{
+	ShipCore->SetCenterOfMass(-GetActorUpVector()*CenterOfMassOffset);
 }
 
 
@@ -99,8 +112,8 @@ void ACustomCar::BeginPlay()
 void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
-	
-	
+	FVector centerOfMassCenter = GetActorLocation() - GetActorUpVector()*CenterOfMassOffset;
+	DrawDebugSphere(GetWorld(), centerOfMassCenter, 50, 10, FColor::Purple);
 	//Test ai: move to player car
 	/*if (AIVehicle)
 	{

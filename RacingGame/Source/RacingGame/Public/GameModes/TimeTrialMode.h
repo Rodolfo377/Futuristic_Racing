@@ -16,5 +16,8 @@ class RACINGGAME_API ATimeTrialMode : public ARacingGameGameModeBase
 {
 	GENERATED_BODY()
 public:
-
+	
+	TArray<int> lapTimeRanking;
+	
+	
 };
