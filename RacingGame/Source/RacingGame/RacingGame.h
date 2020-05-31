@@ -3,4 +3,5 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "Public/GameInfo/TimeTrialRanking.h"
+#include "Kismet/GameplayStatics.h"

@@ -54,6 +54,7 @@ public:
 	// Called every frame
 	
 	void StopLapTime();
+	void StartLapTime();
 	void StopRaceTime();
 	UFUNCTION(BlueprintCallable)
 	float GetLastLapTime();

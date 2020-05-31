@@ -36,6 +36,12 @@ void UACO_TimeKeeper::StopLapTime()
 {
 	float CurrentTime = GetWorld()->TimeSeconds;
 	RaceTimer.Stop(CurrentTime);
+	
+}
+
+void UACO_TimeKeeper::StartLapTime()
+{
+	float CurrentTime = GetWorld()->TimeSeconds;
 	RaceTimer.Start(CurrentTime);
 }
 

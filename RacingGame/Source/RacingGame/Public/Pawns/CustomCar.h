@@ -15,6 +15,7 @@ class UACO_CarEngine;
 class AStaticMeshActor;
 class UACO_CarCollision;
 class UACO_TimeKeeper;
+class UACO_SaveGameData;
 
 UCLASS()
 class RACINGGAME_API ACustomCar : public APawn
@@ -82,11 +83,14 @@ public:
 	UACO_CarCollision *CarCollisionManager = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UACO_TimeKeeper *CarTimeKeeper = nullptr;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UACO_SaveGameData *GameSaveComponent = nullptr;
 	//Measured in m/s (x10 for aesthetics - big speed numbers on screen woo)
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	int CurrentVelocity = 0;
 
+	UPROPERTY(EditAnywhere, Category = "Scoring")
+		FString RacerName = "Bob";
 protected:
 	std::vector<int> Checkpoints = {0, 0, 0};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
@@ -101,6 +105,5 @@ protected:
 	//How far below is the center of mass from the ship core mesh? (cm)
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
 		int CenterOfMassOffset = 200;
-	UPROPERTY(EditAnywhere, Category = "Scoring")
-		FString RacerName = "Bob";
+
 };
