@@ -1,12 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#define printOnScreen(text) if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::Green, text)
-#define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
-
-
 
 #include "../../Public/Gameplay/Checkpoint.h"
 #include "../../Public/Pawns/CustomCar.h"
+#include "../../Public/ActorComponents/ACO_TimeKeeper.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -21,10 +18,10 @@ ACheckpoint::ACheckpoint()
 void ACheckpoint::OnOverlapBegin(AActor * OverlappedActor, AActor * OtherActor)
 {
 	ACustomCar* vehicle = Cast<ACustomCar>(OtherActor);
-	if (vehicle->IsValidLowLevel())
-	{
-		vehicle->UpdateCheckpoint(m_CheckpointId);
-	}
+	ensureAlways(vehicle);
+	ensureAlways(vehicle->CarTimeKeeper);
+
+	vehicle->CarTimeKeeper->UpdateCheckpoint(m_CheckpointId);
 }
 
 void ACheckpoint::OnOverlapEnd(AActor * OverlappedActor, AActor * OtherActor)

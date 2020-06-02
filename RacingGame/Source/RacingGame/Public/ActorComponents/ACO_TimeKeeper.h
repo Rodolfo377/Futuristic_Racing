@@ -8,7 +8,9 @@
 #include "../../Public/Utilities/DebugLogger.h"
 #include "ACO_TimeKeeper.generated.h"
 
-struct LapTimes
+class ACustomCar;
+//Detailed Lap-Record, for waypoint-time comparison
+struct LapRecord
 {
 	float firstWaypointTime = 0;
 	float lastWaypointTime = 0;
@@ -17,7 +19,7 @@ struct LapTimes
 
 struct RaceTimes
 {
-	std::vector<LapTimes> LapTimes;
+	std::vector<LapRecord> LapTimes;
 	std::vector<float> totalLapTimes;
 };
 
@@ -34,6 +36,8 @@ struct UTimer
 	void Stop(float FinalTime);
 };
 
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RACINGGAME_API UACO_TimeKeeper : public UActorComponent
 {
@@ -42,23 +46,35 @@ class RACINGGAME_API UACO_TimeKeeper : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_TimeKeeper();
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)*/
-	UTimer RaceTimer;
+		//Updates array of checkpoints completed when a custom car object overlaps with a checkpoint object. 
+	//FIFO container.
+	//@ id: unique id of checkpoint [1,3]
+	void UpdateCheckpoint(uint32 checkpointId);
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	
 	void StopLapTime();
 	void StartLapTime();
 	void StopRaceTime();
+
 	UFUNCTION(BlueprintCallable)
 	float GetLastLapTime();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<float> GetAllLapTimes();
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentLapID() { return CurrentLap; }
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+	std::vector<int> Checkpoints = { 0, 0, 0 };
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+		int CurrentLap = 1;
+public:	
+	UTimer RaceTimer;
+	ACustomCar *Owner = nullptr;
+
 };

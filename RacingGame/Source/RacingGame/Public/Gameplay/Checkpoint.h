@@ -11,10 +11,10 @@
 UCLASS()
 class RACINGGAME_API ACheckpoint : public ATriggerVolume
 {
-	GENERATED_BODY()
-	
+	GENERATED_BODY()	
+	//Member Functions
 public:	
-	// Sets default values for this actor's properties
+	//Default Constructor
 	ACheckpoint();
 	
 	UFUNCTION()
@@ -23,14 +23,17 @@ public:
 	UFUNCTION()
 	void OnOverlapEnd(class AActor* OverlappedActor, class AActor* OtherActor);
 
-	//Each checkpoint is unique, remember to edit each instance so that it lies between and including 1 and 3.
-	UPROPERTY(EditAnywhere)
-	uint16 m_CheckpointId = 0;
+
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
+	//Member Variables
+public:
+	//Each checkpoint is unique, remember to edit each instance so that it lies between and including 1 and 3.
+	UPROPERTY(EditAnywhere)
+	uint16 m_CheckpointId = 0;
+	
 
 };

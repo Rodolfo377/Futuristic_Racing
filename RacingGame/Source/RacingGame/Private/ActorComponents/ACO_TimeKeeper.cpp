@@ -4,6 +4,8 @@
 #include "../../Public/ActorComponents/ACO_TimeKeeper.h"
 #include "Engine/World.h"
 #include "Internationalization/Text.h"
+#include "../../Public/Pawns/CustomCar.h"
+#include "../../Public/ActorComponents/ACO_SaveGameData.h"
 // Sets default values for this component's properties
 UACO_TimeKeeper::UACO_TimeKeeper()
 {
@@ -14,10 +16,11 @@ UACO_TimeKeeper::UACO_TimeKeeper()
 }
 
 
-// Called when the game starts
 void UACO_TimeKeeper::BeginPlay()
 {
 	Super::BeginPlay();
+	Owner = (ACustomCar*)GetOwner();
+	ensureAlways(Owner);
 	
 	// ...
 	
@@ -32,11 +35,37 @@ void UACO_TimeKeeper::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// ...
 }
 
+void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
+{
+	if (Checkpoints.size() == 3)
+	{
+		if (Checkpoints[0] == 0 && Checkpoints[1] == 0 && Checkpoints[2] == 0)
+		{
+			RaceTimer.Start(GetWorld()->TimeSeconds);
+		}
+
+		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
+		{
+			CurrentLap++;
+			StopLapTime();
+			Owner->GameSaveComponent->SaveGameData();
+			StartLapTime();			
+			Owner->GameSaveComponent->LoadGameData();			
+		}
+
+		if (Checkpoints[2] != checkpointId)
+		{
+			Checkpoints[0] = Checkpoints[1];
+			Checkpoints[1] = Checkpoints[2];
+			Checkpoints[2] = checkpointId;
+		}
+	}
+}
+
 void UACO_TimeKeeper::StopLapTime()
 {
 	float CurrentTime = GetWorld()->TimeSeconds;
-	RaceTimer.Stop(CurrentTime);
-	
+	RaceTimer.Stop(CurrentTime);	
 }
 
 void UACO_TimeKeeper::StartLapTime()
@@ -71,7 +100,7 @@ TArray<float> UACO_TimeKeeper::GetAllLapTimes()
 void UTimer::Start(float CurrentWorldTime)
 {
 	startTime = CurrentWorldTime;
-	LapTimes lap;	
+	LapRecord lap;	
 	lap.waypointTimes.push_back(startTime);
 	lap.firstWaypointTime = startTime;
 	raceClock.LapTimes.push_back(lap);
@@ -93,7 +122,5 @@ void UTimer::Stop(float FinalTime)
 	raceClock.totalLapTimes.push_back(lapTime);
 	lastLapTime = lapTime;
 	FString lapResult = "Stop Lap Timer : " + FString::SanitizeFloat(lapTime);
-	printOnScreen(lapResult);
-
-	
+	printOnScreen(lapResult);	
 }

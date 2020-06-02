@@ -36,7 +36,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-		int GetCurrentLap() { return CurrentLap; }
+		int GetCurrentLap();
 	UFUNCTION(BlueprintCallable)
 		//get current "speed" of this car instance
 		int GetCurrentVelocity();
@@ -49,10 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int GetWallHitDamage() { return WallHitDamage; }
 
-	//Updates array of checkpoints completed when a custom car object overlaps with a checkpoint object. 
-	//FIFO container.
-	//@ id: unique id of checkpoint [1,3]
-	void UpdateCheckpoint(uint32 checkpointId);
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -84,7 +81,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UACO_TimeKeeper *CarTimeKeeper = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UACO_SaveGameData *GameSaveComponent = nullptr;
+	UACO_SaveGameData *GameSaveComponent = nullptr;
 	//Measured in m/s (x10 for aesthetics - big speed numbers on screen woo)
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	int CurrentVelocity = 0;
@@ -92,9 +89,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Scoring")
 		FString RacerName = "Bob";
 protected:
-	std::vector<int> Checkpoints = {0, 0, 0};
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-		int CurrentLap = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		int MaxEnergyLevel = 100;
 	const int MaxEnergyLevel2 = MaxEnergyLevel;

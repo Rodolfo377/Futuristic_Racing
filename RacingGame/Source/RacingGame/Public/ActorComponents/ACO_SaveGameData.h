@@ -40,6 +40,7 @@ protected:
 	//member variables
 public:
 	class ACustomCar *Owner = nullptr;
+	class UTimeTrialRanking* SaveGameInstance = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FString PlayerName;

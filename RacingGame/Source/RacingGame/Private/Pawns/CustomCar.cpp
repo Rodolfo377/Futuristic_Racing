@@ -34,37 +34,16 @@ ACustomCar::ACustomCar()
 	//set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));	
+	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
+	ensureAlways(CarEngine);
 	CarCollisionManager = CreateDefaultSubobject<UACO_CarCollision>(TEXT("CarCollision"));
+	ensureAlways(CarCollisionManager);
 	CarTimeKeeper = CreateDefaultSubobject<UACO_TimeKeeper>(TEXT("TimeKeeper"));
+	ensureAlways(CarTimeKeeper);
 	GameSaveComponent = CreateDefaultSubobject<UACO_SaveGameData>(TEXT("SaveData"));
+	ensureAlways(GameSaveComponent);
 }
 
-void ACustomCar::UpdateCheckpoint(uint32 checkpointId)
-{
-	if (Checkpoints.size() == 3)
-	{
-		if (Checkpoints[0] == 0 && Checkpoints[1] == 0 && Checkpoints[2] == 0)
-		{
-			CarTimeKeeper->RaceTimer.Start(GetWorld()->TimeSeconds);
-		}
-
-		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
-		{
-			CurrentLap++;
-			CarTimeKeeper->StopLapTime();			
-			GameSaveComponent->SaveGameData();
-			CarTimeKeeper->StartLapTime();
-		}
-
-		if (Checkpoints[2] != checkpointId)
-		{
-			Checkpoints[0] = Checkpoints[1];
-			Checkpoints[1] = Checkpoints[2];
-			Checkpoints[2] = checkpointId;
-		}
-	}
-}
 
 int ACustomCar::GetCurrentVelocity()
 {
@@ -82,24 +61,9 @@ int ACustomCar::GetCurrentVelocity()
 void ACustomCar::BeginPlay()
 {
 	Super::BeginPlay();	
-	if (!ShipCore->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("ShipCore is not valid!"));
-		return;
-	}
-	if (!ShipBody->IsValidLowLevel())
-	{
-		UE_LOG(LogTemp, Error, TEXT("ShipBody is not valid!"));
-		return;
-	}
-	if (ShipBody->bEditableWhenInherited)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Ship body is editable by default"))
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Ship body is NOT editable by default"))
-	}
+	ensureAlways(ShipCore);
+	ensureAlways(ShipBody);
+
 
 	CarCollisionManager->ResetPhysXParameters();
 	SetCenterOfMass();
@@ -117,7 +81,7 @@ void ACustomCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 	FVector centerOfMassCenter = GetActorLocation() - GetActorUpVector()*CenterOfMassOffset;
-	DrawDebugSphere(GetWorld(), centerOfMassCenter, 50, 10, FColor::Purple);
+	//DrawDebugSphere(GetWorld(), centerOfMassCenter, 50, 10, FColor::Purple);
 	//Test ai: move to player car
 	/*if (AIVehicle)
 	{
@@ -140,6 +104,12 @@ void ACustomCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		PlayerInputComponent->BindAction("RightBarrelRoll", IE_Pressed, CarEngine, &UACO_CarEngine::RightBarrelRoll);
 		
 	}
+}
+
+int ACustomCar::GetCurrentLap()
+{
+	ensureAlways(CarTimeKeeper);
+	return CarTimeKeeper->GetCurrentLapID();
 }
 
 

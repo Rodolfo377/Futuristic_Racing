@@ -43,12 +43,14 @@ void UACO_SaveGameData::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 void UACO_SaveGameData::SaveGameData()
 {
-	class UTimeTrialRanking* SaveGameInstance = Cast<UTimeTrialRanking>(UGameplayStatics::CreateSaveGameObject(UTimeTrialRanking::StaticClass()));
-	if (SaveGameInstance->IsValidLowLevel())
+	if (!SaveGameInstance)
 	{
-		
+		SaveGameInstance = Cast<UTimeTrialRanking>(UGameplayStatics::CreateSaveGameObject(UTimeTrialRanking::StaticClass()));
+	}
+	if (SaveGameInstance)
+	{
 		//Write Data on the savegame object
-		//SaveGameInstance->AddEntry(Owner->RacerName, Owner->CarTimeKeeper->GetAllLapTimes(), FDateTime::Now());
+		SaveGameInstance->AddEntry(Owner->RacerName, Owner->CarTimeKeeper->GetLastLapTime(), FDateTime::Now());
 		//
 		if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveSlotName, UserIndex))
 		{
@@ -56,12 +58,34 @@ void UACO_SaveGameData::SaveGameData()
 			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, FString(TEXT("Game Saved")), true);
 		}
 	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error Saving Game!"));
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString(TEXT("Error Saving Game!")), true);
+	}
 }
 
 void UACO_SaveGameData::LoadGameData()
 {
-	FAsyncLoadGameFromSlotDelegate LoadedDelegate;
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, FString(TEXT("Load Game")), true);
+	class UTimeTrialRanking* LoadGameInstance = Cast<UTimeTrialRanking>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
+	if (LoadGameInstance->IsValidLowLevel())
+	{
+		FString lapTimes = "";
+
+		for (auto& entry : LoadGameInstance->BestLapTimes)
+		{
+			lapTimes = FString::SanitizeFloat(entry.lapTime);
+
+			GEngine->AddOnScreenDebugMessage(-1,
+				3.f,
+				FColor::Green,
+				FString("Game Saved: Player Name %s" + entry.PlayerName + " laptime: " + lapTimes),
+				true);
+		}
+	}
 }
+
 
 
 

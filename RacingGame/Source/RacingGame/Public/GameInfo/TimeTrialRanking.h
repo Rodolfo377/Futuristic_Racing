@@ -12,13 +12,13 @@ struct FRaceDetails
 	GENERATED_BODY()
 
 	FRaceDetails() {}
-	FRaceDetails(FString a, TArray<float> b, FDateTime c): PlayerName(a), lapTimes(b), PlayerSaveSlotDate(c){}
+	FRaceDetails(FString a, float b, FDateTime c): PlayerName(a), lapTime(b), PlayerSaveSlotDate(c){}
 
 	UPROPERTY()
 	FString PlayerName;
 
 	UPROPERTY()
-	TArray<float> lapTimes;
+	float lapTime;
 
 	UPROPERTY()
 	FDateTime PlayerSaveSlotDate;
@@ -34,13 +34,13 @@ class RACINGGAME_API UTimeTrialRanking : public USaveGame
 public:
 	UTimeTrialRanking() {}
 	//Attempts to add entry to leaderbord
-	void AddEntry(FString playerName, TArray<float> laptimes, FDateTime c);
+	void AddEntry(FString playerName, float laptimes, FDateTime c);
 protected:
 private:
 	//Variables
 public:
 	//Stores ranking of best lap times of a track
 	UPROPERTY()
-		TArray<FRaceDetails> BestLapTimes;
+	TArray<FRaceDetails> BestLapTimes;
 
 };
