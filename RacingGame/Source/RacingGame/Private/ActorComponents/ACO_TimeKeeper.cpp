@@ -16,6 +16,17 @@ UACO_TimeKeeper::UACO_TimeKeeper()
 }
 
 
+float UACO_TimeKeeper::GetCurrentLapTime()
+{
+	int index = RaceTimer.raceClock.LapTimes.size()-1;
+	if (!RaceTimer.raceClock.LapTimes.empty())
+	{
+		float lapTime = GetWorld()->TimeSeconds - RaceTimer.raceClock.LapTimes[index].firstWaypointTime;;
+		return lapTime;
+	}
+	return 0;
+}
+
 void UACO_TimeKeeper::BeginPlay()
 {
 	Super::BeginPlay();

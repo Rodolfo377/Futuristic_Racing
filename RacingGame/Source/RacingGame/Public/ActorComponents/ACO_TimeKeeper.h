@@ -67,6 +67,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentLapID() { return CurrentLap; }
 
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentLapTime();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

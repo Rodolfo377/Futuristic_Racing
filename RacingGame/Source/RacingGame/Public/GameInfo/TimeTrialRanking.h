@@ -43,4 +43,7 @@ public:
 	UPROPERTY()
 	TArray<FRaceDetails> BestLapTimes;
 
+	UFUNCTION()
+	void printLapTimes();
+
 };
