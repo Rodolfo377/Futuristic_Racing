@@ -9,6 +9,7 @@
 #include "ACO_TimeKeeper.generated.h"
 
 class ACustomCar;
+class ATimeTrialMode;
 //Detailed Lap-Record, for waypoint-time comparison
 struct LapRecord
 {
@@ -79,5 +80,5 @@ protected:
 public:	
 	UTimer RaceTimer;
 	ACustomCar *Owner = nullptr;
-
+	//ATimeTrialMode* timeTrialGameMode = nullptr;
 };

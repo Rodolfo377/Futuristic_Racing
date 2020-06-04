@@ -6,6 +6,9 @@
 #include "Internationalization/Text.h"
 #include "../../Public/Pawns/CustomCar.h"
 #include "../../Public/ActorComponents/ACO_SaveGameData.h"
+#include "../../Public/GameModes/TimeTrialMode.h"
+#include "../../Public/GameInfo/RaceInfo.h"
+#include "Kismet/GameplayStatics.h"
 // Sets default values for this component's properties
 UACO_TimeKeeper::UACO_TimeKeeper()
 {
@@ -33,6 +36,12 @@ void UACO_TimeKeeper::BeginPlay()
 	Owner = (ACustomCar*)GetOwner();
 	ensureAlways(Owner);
 	
+	ATimeTrialMode* timeTrialGameMode = nullptr;
+	
+	AGameModeBase* baseGameMode = UGameplayStatics::GetGameMode(this);
+
+	URaceInfo* raceInfo = Cast<URaceInfo>(baseGameMode->GetComponentByClass(URaceInfo::StaticClass()));
+	ensureAlways(raceInfo);
 	// ...
 	
 }
@@ -59,9 +68,10 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 		{
 			CurrentLap++;
 			StopLapTime();
-			Owner->GameSaveComponent->SaveGameData();
+			//ensureAlways(timeTrialGameMode);
+			//Owner->GameSaveComponent->SaveGameData();
 			StartLapTime();			
-			Owner->GameSaveComponent->LoadGameData();			
+			//Owner->GameSaveComponent->LoadGameData();			
 		}
 
 		if (Checkpoints[2] != checkpointId)
@@ -97,12 +107,10 @@ float UACO_TimeKeeper::GetLastLapTime()
 TArray<float> UACO_TimeKeeper::GetAllLapTimes()
 {
 	TArray<float> lapTimes;
-	int x = 3;
-	lapTimes.Init(0, x);
 
 	for (int i = 0; i < RaceTimer.raceClock.totalLapTimes.size(); i++)
 	{
-		lapTimes[i] = RaceTimer.raceClock.totalLapTimes[i];
+		lapTimes.Emplace(RaceTimer.raceClock.totalLapTimes[i]);
 	}
 
 	return lapTimes;

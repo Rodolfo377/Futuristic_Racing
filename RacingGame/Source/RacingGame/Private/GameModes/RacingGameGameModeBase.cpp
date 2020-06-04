@@ -2,4 +2,5 @@
 
 
 #include "../../Public/GameModes/RacingGameGameModeBase.h"
+#include "../../Public/GameInfo/RaceInfo.h"
 
