@@ -40,8 +40,8 @@ ACustomCar::ACustomCar()
 	ensureAlways(CarCollisionManager);
 	CarTimeKeeper = CreateDefaultSubobject<UACO_TimeKeeper>(TEXT("TimeKeeper"));
 	ensureAlways(CarTimeKeeper);
-	GameSaveComponent = CreateDefaultSubobject<UACO_SaveGameData>(TEXT("SaveData"));
-	ensureAlways(GameSaveComponent);
+	/*GameSaveComponent = CreateDefaultSubobject<UACO_SaveGameData>(TEXT("SaveData"));
+	ensureAlways(GameSaveComponent);*/
 }
 
 

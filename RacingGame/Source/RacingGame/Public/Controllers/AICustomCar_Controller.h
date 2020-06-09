@@ -17,10 +17,24 @@ class RACINGGAME_API AAICustomCar_Controller : public AAIController
 {
 	GENERATED_BODY()
 
+	//Member Functions
+public:
+	AAICustomCar_Controller();
+
 	virtual void Tick(float DeltaTime) override;
 private:
 	ACustomCar* GetControlledCar() const;
 	ACustomCar* GetPlayerCar() const;
 	void BeginPlay() override;
+	void MoveTo(FVector pos);
 	
+	//Member Variables
+public:
+	UPROPERTY(EditAnywhere, Category = "Debug Drawing")
+	bool PathFollowingDebugDraw = false;
+
+private:
+	float TargetAcceptanceRadius = 50.0f;
+	int CurrentWaypoint_id = 0;
+	class ARacingGameGameModeBase* GameMode;
 };

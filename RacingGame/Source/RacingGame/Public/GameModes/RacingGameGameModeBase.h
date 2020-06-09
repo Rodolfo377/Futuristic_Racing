@@ -15,8 +15,6 @@ class RACINGGAME_API ARacingGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	
-
 	virtual void StartMode() {};
 	virtual void PauseMode() {};
 	virtual void QuitMode() {};
@@ -27,9 +25,14 @@ public:
 public:
 	//UPROPERTY(EditAnywhere)
 	//URaceInfo *RaceInfo = nullptr;
-private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FVector> WaypointPositions;
+
 	//TODO: initialize this to be a level-based best Lap Time. 
-	float bestLapTime = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float bestLapTime = 0;
+
+
 	
 
 };

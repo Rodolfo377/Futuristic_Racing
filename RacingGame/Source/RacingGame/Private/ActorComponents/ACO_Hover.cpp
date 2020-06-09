@@ -185,9 +185,6 @@ FHitResult UACO_Hover::RaycastToFloor(FVector offset)
 {
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, Owner);
 
-	/*FVector p1 = GetReachLineStart(offset);
-	FVector p2 = GetReachLineEnd(p1);*/
-
 	FHitResult closestHit;
 	closestHit.Distance = -1;
 
@@ -203,7 +200,7 @@ FHitResult UACO_Hover::RaycastToFloor(FVector offset)
 
 	for (int i = 0; i < 4; i++)
 	{
-		//DrawDebugLine(GetWorld(), origin, allFloorWhiskers[i], FColor::Purple);
+		DrawDebugLine(GetWorld(), origin, allFloorWhiskers[i], FColor::Purple, false, false, 0, 2.0f);
 
 		
 		GetWorld()->LineTraceSingleByObjectType(

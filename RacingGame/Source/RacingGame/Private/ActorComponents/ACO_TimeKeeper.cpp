@@ -67,11 +67,8 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
 		{
 			CurrentLap++;
-			StopLapTime();
-			//ensureAlways(timeTrialGameMode);
-			//Owner->GameSaveComponent->SaveGameData();
-			StartLapTime();			
-			//Owner->GameSaveComponent->LoadGameData();			
+			StopLapTime();	
+			StartLapTime();					
 		}
 
 		if (Checkpoints[2] != checkpointId)
