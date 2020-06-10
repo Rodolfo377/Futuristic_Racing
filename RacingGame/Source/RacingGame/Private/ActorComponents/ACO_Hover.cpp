@@ -108,11 +108,7 @@ void UACO_Hover::ApplyCustomGravity()
 		{
 			//apply custom gravity in the last known downwards direction
 			Owner->ShipCore->AddForce(downwardsForce * 1000);
-			
-
-			//UE_LOG(LogTemp, Warning, TEXT("Falling!"));
-			//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Magenta, false, 0, 0, 3);
-
+		
 		}
 	}
 	else//flying
@@ -200,7 +196,7 @@ FHitResult UACO_Hover::RaycastToFloor(FVector offset)
 
 	for (int i = 0; i < 4; i++)
 	{
-		DrawDebugLine(GetWorld(), origin, allFloorWhiskers[i], FColor::Purple, false, false, 0, 2.0f);
+		//DrawDebugLine(GetWorld(), origin, allFloorWhiskers[i], FColor::Purple, false, false, 0, 2.0f);
 
 		
 		GetWorld()->LineTraceSingleByObjectType(

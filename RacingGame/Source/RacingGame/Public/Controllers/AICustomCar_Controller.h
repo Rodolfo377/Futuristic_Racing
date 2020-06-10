@@ -33,8 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Debug Drawing")
 	bool PathFollowingDebugDraw = false;
 
+	UPROPERTY(EditAnywhere, Category = "Adjustments")
+	float TargetAcceptanceRadius = 200.0f;
 private:
-	float TargetAcceptanceRadius = 50.0f;
+	
 	int CurrentWaypoint_id = 0;
 	class ARacingGameGameModeBase* GameMode;
 };

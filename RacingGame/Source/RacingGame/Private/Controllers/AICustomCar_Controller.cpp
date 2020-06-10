@@ -44,6 +44,10 @@ void AAICustomCar_Controller::MoveTo(FVector targetPos)
 	if (FVector::Distance(GetControlledCar()->GetActorLocation(), targetPos) < TargetAcceptanceRadius)
 	{
 		CurrentWaypoint_id++;
+		if (CurrentWaypoint_id == GameMode->WaypointPositions.Num())
+		{
+			CurrentWaypoint_id = 0;
+		}
 	}
 	else
 	{
@@ -58,22 +62,19 @@ void AAICustomCar_Controller::MoveTo(FVector targetPos)
 			DrawDebugLine(GetWorld(), vehiclePos, vehiclePos + forwardVector * 300, FColor::Cyan, false, 0, 0, 5);
 			DrawDebugLine(GetWorld(), vehiclePos, targetPos, FColor::Green, false, 0, 0, 5);
 		}
+		
 		//TODO: Accelerate and Steer car towards targetPos
 		FVector crossP = FVector::CrossProduct(distanceVector, forwardVector);
-		crossP.Normalize();
-		
-		float dotP = FVector::DotProduct(distanceVector, forwardVector);
-		float angleDeg = atan2(crossP.Size(), dotP);
-		
-		float angleDegrees = FMath::RadiansToDegrees(angleDeg);
+		FVector upVector = GetControlledCar()->GetActorUpVector();
 
-		UE_LOG(LogTemp, Warning, TEXT("Angle: %f"), angleDegrees);
-		if (angleDegrees > 5)
+		float dotTurning = FVector::DotProduct(crossP, upVector);
+
+		if (dotTurning > 0.2)
 		{
 			GetControlledCar()->CarEngine->Steer(-0.5);
 			UE_LOG(LogTemp, Warning, TEXT("Turning Left"));
 		}
-		if (angleDegrees < -5)
+		if (dotTurning < -0.2)
 		{
 			GetControlledCar()->CarEngine->Steer(0.5);
 			UE_LOG(LogTemp, Warning, TEXT("Turning Right"));
