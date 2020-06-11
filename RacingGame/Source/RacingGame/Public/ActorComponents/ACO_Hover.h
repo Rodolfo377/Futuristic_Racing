@@ -17,6 +17,7 @@ class RACINGGAME_API UACO_Hover : public UActorComponent
 {
 	GENERATED_BODY()
 
+		//Member Functions
 public:	
 	// Sets default values for this component's properties
 	UACO_Hover();
@@ -32,9 +33,11 @@ public:
 	FVector GetReachLineEnd(FVector startPos);
 	FHitResult RaycastToFloor(FVector offset);
 
-	// Called every frame
+	//returns physics material of actor that was hit by raycast.
+	UPhysicalMaterial* GetHitMaterial(FHitResult);
 
-
+	//Member Variables
+public:
 	
 
 	ACustomCar* Owner = nullptr;
@@ -95,6 +98,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Vehicle-Track Alignment")
 		double GravityRaycastReach = 500;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle - Track Alignment")
+		class UPhysicalMaterial* TrackPhysicalMaterial = nullptr;
+
+	
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

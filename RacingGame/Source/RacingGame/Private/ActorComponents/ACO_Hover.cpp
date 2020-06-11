@@ -6,6 +6,10 @@
 #include "../../Public/Pawns/CustomCar.h"
 #include "Engine/World.h"
 #include "Engine/Canvas.h"
+#include "Materials/MaterialInstance.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Engine/Engine.h"
+#include "Engine/StaticMesh.h"
 
 // Sets default values for this component's properties
 UACO_Hover::UACO_Hover()
@@ -24,7 +28,6 @@ void UACO_Hover::BeginPlay()
 	Owner = (ACustomCar*)GetOwner();
 
 	ensureAlways(Owner);
-
 	SetupInputComponent();
 
 
@@ -89,27 +92,28 @@ void UACO_Hover::ApplyCustomGravity()
 
 	if (Hit.Actor->IsValidLowLevel())
 	{
-		FVector groundNormal;
-		if (Hit.Actor->ActorHasTag("Track"))//if hit ground
-		{
-			//Apply custom gravity
-			groundNormal = Hit.Normal;
-			downwardsForce = (-1)*groundNormal * HoverGravity;
-			CustomGravityMagnitude = downwardsForce.Size();
-
-			TempGroundNormal = groundNormal;
-
-			ApplyHoverForce();
-			Owner->ShipCore->AddForce(downwardsForce);
-			AlignShipTrack();
-			//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
+		FVector groundNormal;		
+		
+		UPhysicalMaterial* physMat = GetHitMaterial(Hit);
+		if (physMat->GetName() == TrackPhysicalMaterial->GetName())
+		{					
+				//Apply custom gravity
+				groundNormal = Hit.Normal;
+				downwardsForce = (-1)*groundNormal * HoverGravity;
+				CustomGravityMagnitude = downwardsForce.Size();
+				TempGroundNormal = groundNormal;
+				ApplyHoverForce();
+				Owner->ShipCore->AddForce(downwardsForce);
+				AlignShipTrack();
+				//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(50, 50, 50), FColor::Green, false, 0, 0, 3);
 		}
 		else
 		{
-			//apply custom gravity in the last known downwards direction
+				//apply custom gravity in the last known downwards direction
 			Owner->ShipCore->AddForce(downwardsForce * 1000);
 		
 		}
+		
 	}
 	else//flying
 	{
@@ -198,7 +202,6 @@ FHitResult UACO_Hover::RaycastToFloor(FVector offset)
 	{
 		//DrawDebugLine(GetWorld(), origin, allFloorWhiskers[i], FColor::Purple, false, false, 0, 2.0f);
 
-		
 		GetWorld()->LineTraceSingleByObjectType(
 			allHits[i],
 			origin,
@@ -212,18 +215,29 @@ FHitResult UACO_Hover::RaycastToFloor(FVector offset)
 	{
 		if (allHits[i].IsValidBlockingHit())
 		{
-			if (closestHit.Distance < 0)//set the closest distance to the first valid value
+			if (closestHit.Distance < 0 || allHits[i].Distance < closestHit.Distance)//set the closest distance to the first valid value
 			{
-				closestHit = allHits[i];
-			}
-			else if (allHits[i].Distance < closestHit.Distance)
-			{
-				closestHit = allHits[i];
+				
+				UPhysicalMaterial* physMat = GetHitMaterial(allHits[i]);
+				//
+				if (physMat->GetName() == TrackPhysicalMaterial->GetName())
+				{
+					closestHit = allHits[i];
+				}
 			}
 		}
 	}
 
 	return closestHit;
+}
+
+UPhysicalMaterial* UACO_Hover::GetHitMaterial(FHitResult hit)
+{
+	UStaticMeshComponent* ActorMesh = Cast<UStaticMeshComponent>(hit.Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	verifyf(ActorMesh, TEXT("No Actor Mesh Detected %s"), *hit.Actor->GetName());
+	
+	UPhysicalMaterial* physMat = ActorMesh->GetStaticMesh()->GetMaterial(0)->GetPhysicalMaterial();
+	return physMat;
 }
 
 
