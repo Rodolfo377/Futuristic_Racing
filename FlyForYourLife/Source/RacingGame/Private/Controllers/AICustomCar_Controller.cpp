@@ -38,13 +38,13 @@ void AAICustomCar_Controller::BeginPlay()
 	}
 }
 
-void AAICustomCar_Controller::MoveTo(FVector targetPos)
+void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 {
 	//Check if target was reached (overlap)
 	if (FVector::Distance(GetControlledCar()->GetActorLocation(), targetPos) < TargetAcceptanceRadius)
 	{
 		CurrentWaypoint_id++;
-		if (CurrentWaypoint_id == GameMode->WaypointPositions.Num())
+		if (CurrentWaypoint_id == GameMode->ArrayOfWaypoints.Num())
 		{
 			CurrentWaypoint_id = 0;
 		}
@@ -72,12 +72,10 @@ void AAICustomCar_Controller::MoveTo(FVector targetPos)
 		if (dotTurning > 0.2)
 		{
 			GetControlledCar()->CarEngine->Steer(-0.5);
-			UE_LOG(LogTemp, Warning, TEXT("Turning Left"));
 		}
 		if (dotTurning < -0.2)
 		{
 			GetControlledCar()->CarEngine->Steer(0.5);
-			UE_LOG(LogTemp, Warning, TEXT("Turning Right"));
 		}
 	}
 
@@ -89,13 +87,13 @@ void AAICustomCar_Controller::Tick(float DeltaTime)
 {
 	if (GetControlledCar())
 	{		
-		if (GameMode->WaypointPositions.Num() == 0)
+		if (GameMode->ArrayOfWaypoints.Num() == 0)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Waypoint array empty"));
 			return;
 		}
 		
-		MoveTo(GameMode->WaypointPositions[CurrentWaypoint_id]);
+		MoveToTarget(GameMode->ArrayOfWaypoints[CurrentWaypoint_id].WorldPosition);
 		
 		/*if (result == EPathFollowingRequestResult::Type::AlreadyAtGoal)
 		{

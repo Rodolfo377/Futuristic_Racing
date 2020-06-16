@@ -26,7 +26,7 @@ private:
 	ACustomCar* GetControlledCar() const;
 	ACustomCar* GetPlayerCar() const;
 	void BeginPlay() override;
-	void MoveTo(FVector pos);
+	void MoveToTarget(FVector pos);
 	
 	//Member Variables
 public:

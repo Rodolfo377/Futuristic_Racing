@@ -10,6 +10,19 @@ class URaceInfo;
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FWaypointInfo
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TargetReachedRadius = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SteeringDetectionRadius = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WorldPosition;
+};
+
 UCLASS()
 class RACINGGAME_API ARacingGameGameModeBase : public AGameModeBase
 {
@@ -20,7 +33,6 @@ public:
 	virtual void QuitMode() {};
 	virtual void CompleteMode() {};
 
-	void setBestLapTime(float t) { bestLapTime = t; }
 
 public:
 	//UPROPERTY(EditAnywhere)
@@ -28,11 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FVector> WaypointPositions;
 
-	//TODO: initialize this to be a level-based best Lap Time. 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float bestLapTime = 0;
-
-
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="Waypoints")
+	TArray<FWaypointInfo> ArrayOfWaypoints;
 
 };
