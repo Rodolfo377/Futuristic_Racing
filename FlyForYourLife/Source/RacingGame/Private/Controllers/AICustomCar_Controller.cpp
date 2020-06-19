@@ -3,9 +3,11 @@
 
 #include "../../Public/Controllers/AICustomCar_Controller.h"
 #include "../../Public/ActorComponents/ACO_CarEngine.h"
+#include "../../Public/GameModes/RacingGameGameModeBase.h"
+
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
-#include "../../Public/GameModes/RacingGameGameModeBase.h"
+#include "Public/Utilities/DebugLogger.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -41,17 +43,28 @@ void AAICustomCar_Controller::BeginPlay()
 void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 {
 	float TargetAcceptanceRadius = GameMode->ArrayOfWaypoints[CurrentWaypoint_id].TargetReachedRadius;
+	float SteeringRadius = GameMode->ArrayOfWaypoints[CurrentWaypoint_id].SteeringDetectionRadius;
+	float distance = FVector::Distance(GetControlledCar()->GetActorLocation(), targetPos);
 	//Check if target was reached (overlap)
-	if (FVector::Distance(GetControlledCar()->GetActorLocation(), targetPos) < TargetAcceptanceRadius)
+	if (distance < SteeringRadius && distance > TargetAcceptanceRadius)
+	{
+		GetControlledCar()->CarEngine->Accelerate(0.05f);
+		printOnScreen("Braking");
+		
+	}
+	else if (distance < TargetAcceptanceRadius)
 	{
 		CurrentWaypoint_id++;
 		if (CurrentWaypoint_id == GameMode->ArrayOfWaypoints.Num())
 		{
 			CurrentWaypoint_id = 0;
 		}
+		printOnScreen("Reached Target");
 	}
 	else
 	{
+		printOnScreen("Accelerating");
+
 		FVector vehiclePos = GetControlledCar()->GetActorLocation();
    		FVector distanceVector = (targetPos - GetControlledCar()->GetActorLocation());
 		distanceVector.Normalize();
@@ -78,9 +91,10 @@ void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 		{
 			GetControlledCar()->CarEngine->Steer(0.5);
 		}
+		GetControlledCar()->CarEngine->Accelerate(0.5f);
 	}
 
-		GetControlledCar()->CarEngine->Accelerate(0.1f);
+		
 }
 
 

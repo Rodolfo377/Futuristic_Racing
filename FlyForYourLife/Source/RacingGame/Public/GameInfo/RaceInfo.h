@@ -17,6 +17,7 @@ enum class EMatchTypeSelection : uint8
 	ELIMINATION
 };
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RACINGGAME_API URaceInfo : public USceneComponent
 {
@@ -33,8 +34,10 @@ public:
 		int Opponents = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		EMatchTypeSelection SelectedMatchType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<class ACustomCar*> AllShips;
+	
 
-		
 	void BeginPlay();
 
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction);

@@ -80,5 +80,6 @@ protected:
 public:	
 	UTimer RaceTimer;
 	ACustomCar *Owner = nullptr;
+	class URaceInfo* RaceInfo = nullptr;
 	//ATimeTrialMode* timeTrialGameMode = nullptr;
 };

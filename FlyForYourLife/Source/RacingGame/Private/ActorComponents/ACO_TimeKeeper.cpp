@@ -2,13 +2,18 @@
 
 
 #include "../../Public/ActorComponents/ACO_TimeKeeper.h"
-#include "Engine/World.h"
-#include "Internationalization/Text.h"
 #include "../../Public/Pawns/CustomCar.h"
 #include "../../Public/ActorComponents/ACO_SaveGameData.h"
 #include "../../Public/GameModes/TimeTrialMode.h"
 #include "../../Public/GameInfo/RaceInfo.h"
+#include "../../Public/GameModes/RacingGameGameModeBase.h"
+#include "../../Public/Controllers/AICustomCar_Controller.h"
+
+#include "Engine/World.h"
+#include "Internationalization/Text.h"
 #include "Kismet/GameplayStatics.h"
+
+
 // Sets default values for this component's properties
 UACO_TimeKeeper::UACO_TimeKeeper()
 {
@@ -38,10 +43,12 @@ void UACO_TimeKeeper::BeginPlay()
 	
 	ATimeTrialMode* timeTrialGameMode = nullptr;
 	
-	AGameModeBase* baseGameMode = UGameplayStatics::GetGameMode(this);
+	ARacingGameGameModeBase* GameMode = Cast<ARacingGameGameModeBase>(UGameplayStatics::GetGameMode(this));
 
-	URaceInfo* raceInfo = Cast<URaceInfo>(baseGameMode->GetComponentByClass(URaceInfo::StaticClass()));
-	ensureAlways(raceInfo);
+
+
+	RaceInfo = GameMode->RaceInfo;
+	ensureAlways(RaceInfo);
 	// ...
 	
 }
@@ -66,9 +73,18 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 
 		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
 		{
-			CurrentLap++;
+			
 			StopLapTime();	
-			StartLapTime();					
+			if (Owner->GetCurrentLap() == RaceInfo->Laps)
+			{
+				AAICustomCar_Controller* DummyController = NewObject<AAICustomCar_Controller>(AAICustomCar_Controller::StaticClass());
+				//Owner->Possess(DummyController);
+				DummyController->Possess(Owner);
+				
+				return;
+			}
+			StartLapTime();	
+			CurrentLap++;
 		}
 
 		if (Checkpoints[2] != checkpointId)
@@ -120,7 +136,7 @@ void UTimer::Start(float CurrentWorldTime)
 	lap.waypointTimes.push_back(startTime);
 	lap.firstWaypointTime = startTime;
 	raceClock.LapTimes.push_back(lap);
-	printOnScreen("Start Lap Timer!");
+	//printOnScreen("Start Lap Timer!");
 }
 
 void UTimer::Update(float DeltaTime)

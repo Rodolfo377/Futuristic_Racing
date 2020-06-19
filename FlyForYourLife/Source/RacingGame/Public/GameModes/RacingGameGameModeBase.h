@@ -47,4 +47,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
 	bool DrawDebugWaypoints = false;
+
+	class URaceInfo* RaceInfo = nullptr;
 };

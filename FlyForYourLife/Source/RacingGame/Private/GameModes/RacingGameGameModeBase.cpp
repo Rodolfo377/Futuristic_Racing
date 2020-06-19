@@ -8,6 +8,8 @@
 
 void ARacingGameGameModeBase::BeginPlay()
 {
+	RaceInfo = Cast<URaceInfo>(GetComponentByClass(URaceInfo::StaticClass()));
+	check(RaceInfo);
 }
 
 void ARacingGameGameModeBase::Tick(float DeltaTime)

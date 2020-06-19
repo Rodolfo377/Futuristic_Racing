@@ -34,6 +34,6 @@ public:
 	bool PathFollowingDebugDraw = false;
 private:
 	
-	int CurrentWaypoint_id = 0;
-	class ARacingGameGameModeBase* GameMode;
+	int CurrentWaypoint_id = 1;
+	class ARacingGameGameModeBase* GameMode = nullptr;
 };

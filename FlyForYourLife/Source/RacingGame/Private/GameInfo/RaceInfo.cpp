@@ -1,7 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "..\..\Public\GameInfo\RaceInfo.h"
+#include "../../Public/GameInfo/RaceInfo.h"
+#include "../../Public/Pawns/CustomCar.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 // Sets default values for this component's properties
 URaceInfo::URaceInfo()
@@ -18,7 +22,13 @@ URaceInfo::URaceInfo()
 void URaceInfo::BeginPlay()
 {
 	Super::BeginPlay();
-
+	TArray<AActor*> AllActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomCar::StaticClass(), AllActors);
+	for (AActor* Actor : AllActors)
+	{
+		//AllShips.Emplace(Cast<ACustomCar*>(Actor));
+	}
+	ensureAlways(AllShips.Num() > 0);
 	// ...
 	
 }

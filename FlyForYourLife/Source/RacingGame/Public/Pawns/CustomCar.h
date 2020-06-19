@@ -74,9 +74,10 @@ public:
 	class UACO_TimeKeeper* CarTimeKeeper = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UACO_Hover* CarHover = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UACO_SaveGameData* GameSaveComponent = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UACO_Position* CarPosition = nullptr;
 	//Measured in m/s (x10 for aesthetics - big speed numbers on screen woo)
 	
 

@@ -5,6 +5,7 @@
 #include "../../Public/ActorComponents/ACO_TimeKeeper.h"
 #include "../../Public/ActorComponents/ACO_SaveGameData.h"
 #include "../../Public/ActorComponents/ACO_Hover.h"
+#include "../../Public/ActorComponents/ACO_Position.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -43,6 +44,8 @@ ACustomCar::ACustomCar()
 	ensureAlways(CarTimeKeeper);
 	CarHover = CreateDefaultSubobject<UACO_Hover>(TEXT("CarHover"));
 	ensureAlways(CarHover);
+	CarPosition = CreateDefaultSubobject<UACO_Position>(TEXT("CarPosition"));
+	ensureAlways(CarPosition);
 	/*GameSaveComponent = CreateDefaultSubobject<UACO_SaveGameData>(TEXT("SaveData"));
 	ensureAlways(GameSaveComponent);*/
 }
