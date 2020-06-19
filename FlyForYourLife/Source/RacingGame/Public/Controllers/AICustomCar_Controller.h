@@ -32,9 +32,6 @@ private:
 public:
 	UPROPERTY(EditAnywhere, Category = "Debug Drawing")
 	bool PathFollowingDebugDraw = false;
-
-	UPROPERTY(EditAnywhere, Category = "Adjustments")
-	float TargetAcceptanceRadius = 200.0f;
 private:
 	
 	int CurrentWaypoint_id = 0;

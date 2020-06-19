@@ -33,6 +33,8 @@ public:
 	virtual void QuitMode() {};
 	virtual void CompleteMode() {};
 
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	//UPROPERTY(EditAnywhere)
@@ -43,4 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="Waypoints")
 	TArray<FWaypointInfo> ArrayOfWaypoints;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
+	bool DrawDebugWaypoints = false;
 };

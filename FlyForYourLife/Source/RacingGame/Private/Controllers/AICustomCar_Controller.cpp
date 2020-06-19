@@ -40,6 +40,7 @@ void AAICustomCar_Controller::BeginPlay()
 
 void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 {
+	float TargetAcceptanceRadius = GameMode->ArrayOfWaypoints[CurrentWaypoint_id].TargetReachedRadius;
 	//Check if target was reached (overlap)
 	if (FVector::Distance(GetControlledCar()->GetActorLocation(), targetPos) < TargetAcceptanceRadius)
 	{
@@ -52,7 +53,7 @@ void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 	else
 	{
 		FVector vehiclePos = GetControlledCar()->GetActorLocation();
-		FVector distanceVector = (targetPos - GetControlledCar()->GetActorLocation());
+   		FVector distanceVector = (targetPos - GetControlledCar()->GetActorLocation());
 		distanceVector.Normalize();
 		FVector forwardVector = GetControlledCar()->GetActorForwardVector();
 		forwardVector.Normalize();

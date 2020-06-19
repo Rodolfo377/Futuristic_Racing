@@ -52,6 +52,7 @@ void UACO_Hover::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	ApplyCustomGravity();
+	DebugDraw();
 }
 
 void UACO_Hover::SetupInputComponent()
@@ -122,7 +123,7 @@ void UACO_Hover::ApplyCustomGravity()
 		else
 		{
 				//apply custom gravity in the last known downwards direction
-			Owner->ShipCore->AddForce(downwardsForce * 1000);
+			Owner->ShipCore->AddForce(downwardsForce * 100);
 		
 		}
 		
