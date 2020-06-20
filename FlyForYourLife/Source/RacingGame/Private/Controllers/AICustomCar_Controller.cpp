@@ -110,15 +110,6 @@ void AAICustomCar_Controller::Tick(float DeltaTime)
 		
 		MoveToTarget(GameMode->ArrayOfWaypoints[CurrentWaypoint_id].WorldPosition);
 		
-		/*if (result == EPathFollowingRequestResult::Type::AlreadyAtGoal)
-		{
-			waypoint_id++;
-			if (waypoint_id >= GameMode->WaypointPositions.Num())
-			{
-				waypoint_id = 0;
-			}
-		}*/
-		//EPathFollowingRequestResult::Type::
 	}
 }
 

@@ -4,6 +4,9 @@
 #include "../../Public/ActorComponents/ACO_Position.h"
 #include "../../Public/Pawns/CustomCar.h"
 #include "../../Public/GameModes/RacingGameGameModeBase.h"
+#include "../../Public/Utilities/DebugLogger.h"
+#include "../../Public/Controllers/AICustomCar_Controller.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Components/SplineComponent.h"
@@ -24,12 +27,7 @@ void UACO_Position::BeginPlay()
 	Super::BeginPlay();
 	Owner = (ACustomCar*)GetOwner();
 	ensureAlways(Owner);
-	TArray<AActor*> AllActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TrackTag, AllActors);
-	ensureAlways(AllActors.Num() == 1);
-	Track = AllActors[0];
-	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
-	ensureAlways(Spline);
+
 
 	if (UGameplayStatics::GetGameMode(GetWorld()))
 	{
@@ -37,7 +35,8 @@ void UACO_Position::BeginPlay()
 		GameMode = Cast<ARacingGameGameModeBase>(detectedGameMode);
 	}
 
-	
+	Spline = GameMode->Spline;
+	ensureAlways(Spline);
 	// ...
 	
 }
@@ -51,12 +50,7 @@ void UACO_Position::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	float SteeringRadius = GameMode->ArrayOfWaypoints[CurrentWaypoint].SteeringDetectionRadius;
 	float distance = FVector::Distance(Owner->GetActorLocation(), GameMode->ArrayOfWaypoints[CurrentWaypoint].WorldPosition);
 	//Check if target was reached (overlap)
-	/*if (distance < SteeringRadius && distance > TargetAcceptanceRadius)
-	{
-		Owner->CarEngine->Accelerate(0.05f);
-		//printOnScreen("Braking");
 
-	}*/
 	if (distance < TargetAcceptanceRadius)
 	{
 		CurrentWaypoint++;
@@ -64,15 +58,67 @@ void UACO_Position::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		{
 			CurrentWaypoint = 0;
 		}
-		//printOnScreen("Reached Target");
 	}
+	PositionStats.DistanceAlongTrack = GetApproxDistanceClosestToWorldLocation(Owner->GetActorLocation(), Spline);	
 	// ...
 }
 
 FVector UACO_Position::GetRespawnPoint()
 {
-	FVector Respawn = GameMode->ArrayOfWaypoints[CurrentWaypoint].WorldPosition + FVector(0,0,100);
+	class AAICustomCar_Controller* localAIController = Cast<AAICustomCar_Controller>(Owner->GetController());
+	FVector Respawn;
+
+	if (localAIController->IsValidLowLevel())
+	{
+		int waypointId = localAIController->CurrentWaypoint_id - 1;
+		if (waypointId < 1)
+			Respawn = GameMode->ArrayOfWaypoints[GameMode->ArrayOfWaypoints.Num() - 1].WorldPosition + FVector(0, 0, 100);
+		else
+			Respawn = GameMode->ArrayOfWaypoints[localAIController->CurrentWaypoint_id - 1].WorldPosition + FVector(0, 0, 100);
+	}
+	
+	else
+	{
+		if (CurrentWaypoint < 1)
+			Respawn = GameMode->ArrayOfWaypoints[GameMode->ArrayOfWaypoints.Num() - 1].WorldPosition + FVector(0, 0, 100);
+		else
+			Respawn = GameMode->ArrayOfWaypoints[CurrentWaypoint - 1].WorldPosition + FVector(0, 0, 100);
+	}
+	
+	ensureAlways(Respawn.Size() > 0);
 	return Respawn;
 }
+
+//adapted from Daniel Krakowiak at https://forums.unrealengine.com/unreal-engine/feedback-for-epic/97850-get-distance-at-location-along-spline
+float UACO_Position::GetApproxDistanceClosestToWorldLocation(FVector Pos_WS, const USplineComponent* Spline)
+{
+	const auto TargetInputKey = Spline->FindInputKeyClosestToWorldLocation(Pos_WS);
+	const auto PointIdx = static_cast<int32>(TargetInputKey);
+
+	auto LowDistBound_cm = Spline->GetDistanceAlongSplineAtSplinePoint(PointIdx);
+	auto HighDistBound_cm = Spline->GetDistanceAlongSplineAtSplinePoint(PointIdx + 1);
+	auto MiddleDistEstimate_cm = (LowDistBound_cm + HighDistBound_cm) * 0.5f;
+
+	const auto& DistanceToInputMapping = Spline->SplineCurves.ReparamTable;
+
+	for (auto IterCount = 0; IterCount < 10; ++IterCount)
+	{
+		const auto MiddleInputKey = DistanceToInputMapping.Eval(MiddleDistEstimate_cm);
+
+		if (TargetInputKey < MiddleInputKey) {
+			HighDistBound_cm = MiddleDistEstimate_cm;
+		}
+		else {
+			LowDistBound_cm = MiddleDistEstimate_cm;
+		}
+
+		MiddleDistEstimate_cm = (LowDistBound_cm + HighDistBound_cm) * 0.5f;
+	}
+
+	return MiddleDistEstimate_cm;
+}
+
+
+
 
 

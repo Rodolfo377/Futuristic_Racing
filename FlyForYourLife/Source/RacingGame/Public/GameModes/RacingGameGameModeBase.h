@@ -7,6 +7,7 @@
 #include "RacingGameGameModeBase.generated.h"
 
 class URaceInfo;
+class ACustomCar;
 /**
  * 
  */
@@ -45,8 +46,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="Waypoints")
 	TArray<FWaypointInfo> ArrayOfWaypoints;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<ACustomCar*> AllCars;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
 	bool DrawDebugWaypoints = false;
 
+	//Sort Vehicles by their current laps and progress within the race
+	UFUNCTION(BlueprintCallable)
+	void SortVehicles(TArray<ACustomCar*> AllVehicles);
+
 	class URaceInfo* RaceInfo = nullptr;
+
+	AActor* Track = nullptr;
+	class USplineComponent* Spline = nullptr;
+
 };

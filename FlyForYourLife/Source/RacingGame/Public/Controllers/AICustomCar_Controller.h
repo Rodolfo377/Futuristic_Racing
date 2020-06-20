@@ -32,8 +32,7 @@ private:
 public:
 	UPROPERTY(EditAnywhere, Category = "Debug Drawing")
 	bool PathFollowingDebugDraw = false;
-private:
-	
 	int CurrentWaypoint_id = 1;
+private:	
 	class ARacingGameGameModeBase* GameMode = nullptr;
 };

@@ -6,8 +6,20 @@
 #include "Components/ActorComponent.h"
 #include "ACO_Position.generated.h"
 
+class USplineComponent;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+USTRUCT(BlueprintType, Blueprintable)
+struct FPositionStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	float DistanceAlongTrack = 0;
+	UPROPERTY(BlueprintReadWrite)
+	int RacePosition = 0;
+};
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RACINGGAME_API UACO_Position : public UActorComponent
 {
 	GENERATED_BODY()
@@ -19,6 +31,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintCallable)
 	FVector GetRespawnPoint();
+	UFUNCTION(BlueprintCallable)
+	float GetApproxDistanceClosestToWorldLocation(FVector Pos_WS, const USplineComponent* Spline);
 
 protected:
 	// Called when the game starts
@@ -29,6 +43,9 @@ public:
 	FName TrackTag = "Track";
 	AActor* Track = nullptr;
 	class USplineComponent* Spline = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FPositionStats PositionStats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CurrentWaypoint = 1;
