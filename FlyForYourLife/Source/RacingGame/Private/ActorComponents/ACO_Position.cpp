@@ -35,7 +35,12 @@ void UACO_Position::BeginPlay()
 		GameMode = Cast<ARacingGameGameModeBase>(detectedGameMode);
 	}
 
-	Spline = GameMode->Spline;
+	TArray<AActor*> AllActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Track"), AllActors);
+	ensureAlways(AllActors.Num() == 1);
+	Track = AllActors[0];
+	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
+	//Spline = GameMode->Spline;
 	ensureAlways(Spline);
 	// ...
 	

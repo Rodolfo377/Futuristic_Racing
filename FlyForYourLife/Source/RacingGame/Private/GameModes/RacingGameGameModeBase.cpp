@@ -13,25 +13,31 @@
 
 void ARacingGameGameModeBase::BeginPlay()
 {
-	RaceInfo = Cast<URaceInfo>(GetComponentByClass(URaceInfo::StaticClass()));
-	check(RaceInfo);
-	TArray<AActor*> AllActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Track"), AllActors);
-	ensureAlways(AllActors.Num() == 1);
-	Track = AllActors[0];
-	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
-	ensureAlways(Spline);
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomCar::StaticClass(), AllActors);
-	for (AActor* Car: AllActors)
-	{
-		ACustomCar* vehicle = Cast<ACustomCar>(Car);
-		ensureAlways(vehicle);
-		AllCars.Emplace(vehicle);
-	}
+	
+		RaceInfo = Cast<URaceInfo>(GetComponentByClass(URaceInfo::StaticClass()));
+		check(RaceInfo);
+		TArray<AActor*> AllActors;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Track"), AllActors);
+		ensureAlways(AllActors.Num() == 1);
+		Track = AllActors[0];
+		Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
+		ensureAlways(Spline);
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomCar::StaticClass(), AllActors);
+		for (AActor* Car : AllActors)
+		{
+			ACustomCar* vehicle = Cast<ACustomCar>(Car);
+			ensureAlways(vehicle);
+			AllCars.Emplace(vehicle);
+		}
+		//InitFlag = false;
+	
 }
 
 void ARacingGameGameModeBase::Tick(float DeltaTime)
 {
+	
+		
+	
 	SortVehicles(AllCars);
 }
 

@@ -61,4 +61,7 @@ public:
 	AActor* Track = nullptr;
 	class USplineComponent* Spline = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool InitFlag = false;
+
 };

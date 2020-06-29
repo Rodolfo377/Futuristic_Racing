@@ -43,12 +43,11 @@ void UACO_TimeKeeper::BeginPlay()
 	
 	ATimeTrialMode* timeTrialGameMode = nullptr;
 	
-	ARacingGameGameModeBase* GameMode = Cast<ARacingGameGameModeBase>(UGameplayStatics::GetGameMode(this));
+	
 
 
 
-	RaceInfo = GameMode->RaceInfo;
-	ensureAlways(RaceInfo);
+	
 	// ...
 	
 }
@@ -58,8 +57,13 @@ void UACO_TimeKeeper::BeginPlay()
 void UACO_TimeKeeper::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	//RaceTimer.Update(DeltaTime);
-	// ...
+	if (!RaceInfo->IsValidLowLevel())
+	{
+		ARacingGameGameModeBase* GameMode = Cast<ARacingGameGameModeBase>
+			(UGameplayStatics::GetGameMode(this));
+		RaceInfo = GameMode->RaceInfo;
+		ensureAlways(RaceInfo);
+	}
 }
 
 void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)

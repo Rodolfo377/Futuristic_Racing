@@ -25,14 +25,7 @@ void AAICustomCar_Controller::BeginPlay()
 	ACustomCar* PlayerCar = nullptr;
 	PlayerCar = GetPlayerCar();
 
-	if (!PlayerCar)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Car not found!"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Car found!: name: %s"), *PlayerCar->GetName());
-	}
+	ensureAlways(PlayerCar);
 	if (UGameplayStatics::GetGameMode(GetWorld()))
 	{
 		AGameModeBase* detectedGameMode = UGameplayStatics::GetGameMode(GetWorld());
@@ -49,7 +42,7 @@ void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 	if (distance < SteeringRadius && distance > TargetAcceptanceRadius)
 	{
 		GetControlledCar()->CarEngine->Accelerate(0.05f);
-		printOnScreen("Braking");
+	
 		
 	}
 	else if (distance < TargetAcceptanceRadius)
@@ -59,12 +52,10 @@ void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 		{
 			CurrentWaypoint_id = 0;
 		}
-		printOnScreen("Reached Target");
+	
 	}
 	else
 	{
-		printOnScreen("Accelerating");
-
 		FVector vehiclePos = GetControlledCar()->GetActorLocation();
    		FVector distanceVector = (targetPos - GetControlledCar()->GetActorLocation());
 		distanceVector.Normalize();
