@@ -18,6 +18,9 @@ class RACINGGAME_API ACarPlayerController : public APlayerController
 public:
 	ACustomCar* GetControlledCar() const;
 
-	void BeginPlay() override;
-	
+	void Init();
+	void Update();	
+
+private:
+	class ACustomCar* ControlledCar = nullptr;
 };

@@ -27,16 +27,16 @@ class RACINGGAME_API UACO_Position : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_Position();
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void Init();
+	void Update();
+
 	UFUNCTION(BlueprintCallable)
 	FVector GetRespawnPoint();
 	UFUNCTION(BlueprintCallable)
 	float GetApproxDistanceClosestToWorldLocation(FVector Pos_WS, const USplineComponent* Spline);
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+
 
 public:	
 	class ACustomCar* Owner = nullptr;

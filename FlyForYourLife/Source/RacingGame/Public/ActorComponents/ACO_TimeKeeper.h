@@ -48,7 +48,9 @@ public:
 	// Sets default values for this component's properties
 	UACO_TimeKeeper();
 	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void Init();
+	void Update();
+
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)*/
 		//Updates array of checkpoints completed when a custom car object overlaps with a checkpoint object. 
 	//FIFO container.
@@ -72,8 +74,6 @@ public:
 	float GetCurrentLapTime();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 	std::vector<int> Checkpoints = { 0, 0, 0 };
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 		int CurrentLap = 1;

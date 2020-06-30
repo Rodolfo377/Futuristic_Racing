@@ -21,7 +21,9 @@ class RACINGGAME_API UACO_Hover : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_Hover();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	void Init();
+	void Update();
 
 	void SetupInputComponent();
 	void PIDControl();
@@ -35,9 +37,6 @@ public:
 
 	//returns physics material of actor that was hit by raycast.
 	//UPhysicalMaterial* GetHitMaterial(FHitResult);
-
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
 	//Function that will draw any specified components by using specified flags
 	void DebugDraw();

@@ -21,11 +21,12 @@ class RACINGGAME_API AAICustomCar_Controller : public AAIController
 public:
 	AAICustomCar_Controller();
 
-	virtual void Tick(float DeltaTime) override;
+	void Init();
+	void Update();
+
 private:
-	ACustomCar* GetControlledCar() const;
-	ACustomCar* GetPlayerCar() const;
-	void BeginPlay() override;
+	ACustomCar* ControlledCar = nullptr;
+	ACustomCar* GetControlledCar();
 	void MoveToTarget(FVector pos);
 	
 	//Member Variables

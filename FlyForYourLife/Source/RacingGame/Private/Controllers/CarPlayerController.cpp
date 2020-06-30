@@ -3,22 +3,19 @@
 #include "../../Public/Controllers/CarPlayerController.h"
 #include "../../Public/Pawns/CustomCar.h"
 
-void ACarPlayerController::BeginPlay()
+void ACarPlayerController::Init()
 {
-	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("PlayerController"));
 
-	ACustomCar* ControlledCar = nullptr;
 	ControlledCar = GetControlledCar();
+	ensureAlways(ControlledCar);
 
-	if (!ControlledCar)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Car PAwn not possessed!"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("possessed pawn name: %s"), *ControlledCar->GetName());
-	}
+	ControlledCar->Init();
+}
+
+void ACarPlayerController::Update()
+{
+	ControlledCar->Update();
 }
 
 ACustomCar* ACarPlayerController::GetControlledCar() const

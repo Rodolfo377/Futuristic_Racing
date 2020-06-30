@@ -12,25 +12,42 @@
 #include "Kismet/GameplayStatics.h"
 
 
-AAICustomCar_Controller::AAICustomCar_Controller()
-{
-	PrimaryActorTick.bCanEverTick = true;
-}
 
-void AAICustomCar_Controller::BeginPlay()
+void AAICustomCar_Controller::Init()
 {
-	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("AIController"));
 
-	ACustomCar* PlayerCar = nullptr;
-	PlayerCar = GetPlayerCar();
+	ControlledCar = GetControlledCar();
+	ensureAlways(ControlledCar);
 
-	ensureAlways(PlayerCar);
+	ControlledCar->Init();
+
 	if (UGameplayStatics::GetGameMode(GetWorld()))
 	{
 		AGameModeBase* detectedGameMode = UGameplayStatics::GetGameMode(GetWorld());
 		GameMode = Cast<ARacingGameGameModeBase>(detectedGameMode);
 	}
+}
+
+void AAICustomCar_Controller::Update()
+{
+	if (ControlledCar->IsValidLowLevel())
+	{
+		if (GameMode->ArrayOfWaypoints.Num() == 0)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Waypoint array empty"));
+			return;
+		}
+
+		MoveToTarget(GameMode->ArrayOfWaypoints[CurrentWaypoint_id].WorldPosition);
+		ControlledCar->Update();
+	}
+}
+
+
+AAICustomCar_Controller::AAICustomCar_Controller()
+{
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
@@ -83,33 +100,11 @@ void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 			GetControlledCar()->CarEngine->Steer(0.5);
 		}
 		GetControlledCar()->CarEngine->Accelerate(0.5f);
-	}
-
-		
+	}		
 }
 
 
-void AAICustomCar_Controller::Tick(float DeltaTime)
-{
-	if (GetControlledCar())
-	{		
-		if (GameMode->ArrayOfWaypoints.Num() == 0)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Waypoint array empty"));
-			return;
-		}
-		
-		MoveToTarget(GameMode->ArrayOfWaypoints[CurrentWaypoint_id].WorldPosition);
-		
-	}
-}
-
-ACustomCar* AAICustomCar_Controller::GetControlledCar() const
+ACustomCar* AAICustomCar_Controller::GetControlledCar()
 {
 	return Cast<ACustomCar>(GetPawn());
-}
-
-ACustomCar * AAICustomCar_Controller::GetPlayerCar() const
-{
-	return Cast<ACustomCar>(GetWorld()->GetFirstPlayerController()->GetPawn());
 }

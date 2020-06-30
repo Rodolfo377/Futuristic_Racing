@@ -24,6 +24,14 @@ UACO_TimeKeeper::UACO_TimeKeeper()
 }
 
 
+void UACO_TimeKeeper::Init()
+{
+}
+
+void UACO_TimeKeeper::Update()
+{
+}
+
 float UACO_TimeKeeper::GetCurrentLapTime()
 {
 	int index = RaceTimer.raceClock.LapTimes.size()-1;
@@ -35,43 +43,6 @@ float UACO_TimeKeeper::GetCurrentLapTime()
 	return 0;
 }
 
-void UACO_TimeKeeper::BeginPlay()
-{
-	Super::BeginPlay();
-	Owner = (ACustomCar*)GetOwner();
-	ensureAlways(Owner);
-	
-	ATimeTrialMode* timeTrialGameMode = nullptr;
-	
-	
-
-
-
-	
-	// ...
-	
-}
-
-
-// Called every frame
-void UACO_TimeKeeper::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (!RaceInfo->IsValidLowLevel())
-	{
-		ARacingGameGameModeBase* GameMode = Cast<ARacingGameGameModeBase>
-			(UGameplayStatics::GetGameMode(this));
-		if (GameMode->IsValidLowLevel())
-		{
-			RaceInfo = GameMode->RaceInfo;
-			if (RaceInfo->IsValidLowLevel())
-			{
-				printOnScreen(TEXT("Loaded Race Info"))
-			}
-			
-		}
-	}
-}
 
 void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 {

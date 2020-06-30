@@ -6,36 +6,25 @@
 #include "../../Public/Pawns/CustomCar.h"
 
 
+void UACO_CarEngine::Init()
+{
+	Owner = (ACustomCar*)GetOwner();
+	ensureAlways(Owner);
+}
+
+void UACO_CarEngine::Update()
+{
+	ApplySideFriction();
+}
+
 // Sets default values for this component's properties
 UACO_CarEngine::UACO_CarEngine()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
 
-
-// Called when the game starts
-void UACO_CarEngine::BeginPlay()
-{
-	Super::BeginPlay();
-
-	Owner = (ACustomCar*)GetOwner();
-	ensureAlways(Owner);
-	
-}
-
-
-// Called every frame
-void UACO_CarEngine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	ApplySideFriction();
-	// ...
-}
 
 void UACO_CarEngine::Accelerate(float AxisValue)
 {

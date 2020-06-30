@@ -22,11 +22,13 @@ class RACINGGAME_API UACO_CarEngine : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+
+	void Init();
+	void Update();
+
 	// Sets default values for this component's properties
 	UACO_CarEngine();
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 
 	//Raycast to the floor to apply thrusters
 	//FHitResult RaycastToFloor();
@@ -47,8 +49,6 @@ public:
 		UInputComponent* InputComponent = nullptr;
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;	
 
 
 	UPROPERTY(EditAnywhere)

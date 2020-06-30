@@ -17,11 +17,8 @@ UACO_HUD::UACO_HUD()
 	// ...
 }
 
-
-// Called when the game starts
-void UACO_HUD::BeginPlay()
+void UACO_HUD::Init()
 {
-	Super::BeginPlay();
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), InterestTag, InterestPoints);
 	if (InterestPoints.Num() == 0)
 	{
@@ -33,19 +30,15 @@ void UACO_HUD::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, DebugMsg, true);
 	}
 	// ...
-	
-	Owner = Cast<ACustomCar> (GetOwner());
+
+	Owner = Cast<ACustomCar>(GetOwner());
 	ensureAlways(Owner);
 	Controller = Cast<ACarPlayerController>(Owner->GetController());
 	ensureAlways(Controller);
 }
 
-
-// Called every frame
-void UACO_HUD::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UACO_HUD::Update()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	FString DebugMsg = FString::Printf(TEXT("%s interest points found in game"), *FString::FromInt(InterestPoints.Num()));
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, DebugMsg, true);
 
@@ -72,9 +65,8 @@ void UACO_HUD::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 			}
 			DebugMsg = FString::Printf(TEXT("(%s,%s) = interest points found in game"), *FString::FromInt(screenPos.X), *FString::FromInt(screenPos.X));
 			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, DebugMsg, true);
-		
-		
 		}
 	}
 }
+
 

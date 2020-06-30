@@ -21,10 +21,8 @@ UACO_Position::UACO_Position()
 }
 
 
-// Called when the game starts
-void UACO_Position::BeginPlay()
+void UACO_Position::Init()
 {
-	Super::BeginPlay();
 	Owner = (ACustomCar*)GetOwner();
 	ensureAlways(Owner);
 
@@ -42,15 +40,10 @@ void UACO_Position::BeginPlay()
 	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
 	//Spline = GameMode->Spline;
 	ensureAlways(Spline);
-	// ...
-	
 }
 
-
-// Called every frame
-void UACO_Position::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UACO_Position::Update()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	float TargetAcceptanceRadius = GameMode->ArrayOfWaypoints[CurrentWaypoint].TargetReachedRadius;
 	float SteeringRadius = GameMode->ArrayOfWaypoints[CurrentWaypoint].SteeringDetectionRadius;
 	float distance = FVector::Distance(Owner->GetActorLocation(), GameMode->ArrayOfWaypoints[CurrentWaypoint].WorldPosition);
@@ -64,8 +57,7 @@ void UACO_Position::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			CurrentWaypoint = 0;
 		}
 	}
-	PositionStats.DistanceAlongTrack = GetApproxDistanceClosestToWorldLocation(Owner->GetActorLocation(), Spline);	
-	// ...
+	PositionStats.DistanceAlongTrack = GetApproxDistanceClosestToWorldLocation(Owner->GetActorLocation(), Spline);
 }
 
 FVector UACO_Position::GetRespawnPoint()

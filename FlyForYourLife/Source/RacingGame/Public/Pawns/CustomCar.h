@@ -23,8 +23,9 @@ public:
 	// Sets default values for this pawn's properties
 	ACustomCar();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void Init();
+	void Update();
+
 
 	//void Hovering();
 
@@ -45,12 +46,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int GetWallHitDamage() { return WallHitDamage; }
 
-	
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 
 ///Variables
 public:
@@ -68,8 +63,6 @@ public:
 	//Component that will handle input-based movement: acceleration, steering, side friction. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UACO_CarEngine* CarEngine = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UACO_CarCollision* CarCollisionManager = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UACO_TimeKeeper* CarTimeKeeper = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

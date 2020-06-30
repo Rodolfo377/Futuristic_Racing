@@ -16,11 +16,11 @@ class RACINGGAME_API UACO_HUD : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_HUD();
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void Init();
+	void Update();
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+
+
 
 public:	
 	

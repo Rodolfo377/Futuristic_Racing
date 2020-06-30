@@ -26,7 +26,8 @@ void URaceInfo::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomCar::StaticClass(), AllActors);
 	for (AActor* Actor : AllActors)
 	{
-		//AllShips.Emplace(Cast<ACustomCar*>(Actor));
+		ACustomCar* Car = Cast<ACustomCar>(Actor);
+		AllShips.Emplace(Car);
 	}
 	ensureAlways(AllShips.Num() > 0);
 	// ...

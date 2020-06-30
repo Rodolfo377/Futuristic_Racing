@@ -31,23 +31,8 @@
 ACustomCar::ACustomCar()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	
 
-	//set this pawn to be controlled by the lowest-numbered player
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
-	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
-	ensureAlways(CarEngine);
-	CarCollisionManager = CreateDefaultSubobject<UACO_CarCollision>(TEXT("CarCollision"));
-	ensureAlways(CarCollisionManager);
-	CarTimeKeeper = CreateDefaultSubobject<UACO_TimeKeeper>(TEXT("TimeKeeper"));
-	ensureAlways(CarTimeKeeper);
-	CarHover = CreateDefaultSubobject<UACO_Hover>(TEXT("CarHover"));
-	ensureAlways(CarHover);
-	CarPosition = CreateDefaultSubobject<UACO_Position>(TEXT("CarPosition"));
-	ensureAlways(CarPosition);
-	/*GameSaveComponent = CreateDefaultSubobject<UACO_SaveGameData>(TEXT("SaveData"));
-	ensureAlways(GameSaveComponent);*/
 }
 
 
@@ -63,26 +48,46 @@ int ACustomCar::GetCurrentVelocity()
 
 
 
-// Called when the game starts or when spawned
-void ACustomCar::BeginPlay()
+
+
+void ACustomCar::Init()
 {
-	Super::BeginPlay();	
 	ensureAlways(ShipCore);
 	ensureAlways(ShipBody);
 
 
-	CarCollisionManager->ResetPhysXParameters();
-	CarHover->SetCenterOfMass();
+	PrimaryActorTick.bCanEverTick = false;
+
+	//set this pawn to be controlled by the lowest-numbered player
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
+	ensureAlways(CarEngine);
+	CarEngine->Init();
+
+	CarTimeKeeper = CreateDefaultSubobject<UACO_TimeKeeper>(TEXT("TimeKeeper"));
+	ensureAlways(CarTimeKeeper);
+	CarTimeKeeper->Init();
+
+	CarHover = CreateDefaultSubobject<UACO_Hover>(TEXT("CarHover"));
+	ensureAlways(CarHover);
+	CarHover->Init();
+
+	CarPosition = CreateDefaultSubobject<UACO_Position>(TEXT("CarPosition"));
+	ensureAlways(CarPosition);
+	CarPosition->Init();
+
 }
 
-
-
-// Called every frame
-void ACustomCar::Tick(float DeltaTime)
+void ACustomCar::Update()
 {
-	Super::Tick(DeltaTime);	
-	
+	CarEngine->Update();
+	CarTimeKeeper->Update();
+	CarHover->Update();
+	CarPosition->Update();
 }
+
+
 
 
 

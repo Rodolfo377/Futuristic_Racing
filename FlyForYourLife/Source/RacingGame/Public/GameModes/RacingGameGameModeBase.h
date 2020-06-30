@@ -6,8 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "RacingGameGameModeBase.generated.h"
 
-class URaceInfo;
 class ACustomCar;
+class URaceInfo;
 /**
  * 
  */
@@ -29,12 +29,18 @@ class RACINGGAME_API ARacingGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	virtual void StartMode() {};
-	virtual void PauseMode() {};
-	virtual void QuitMode() {};
-	virtual void CompleteMode() {};
+	UFUNCTION(BlueprintCallable)
+	void StartGame();
+	UFUNCTION(BlueprintCallable)
+	void PauseGame();
+	UFUNCTION(BlueprintCallable)
+	void QuitGame();
+	UFUNCTION(BlueprintCallable)
+	void CompleteGame();
 
-	virtual void BeginPlay() override;
+	void Init();
+	void Update();
+
 	virtual void Tick(float DeltaTime) override;
 
 public:
@@ -48,6 +54,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ACustomCar*> AllCars;
+
+	//For now there is only one player, but adding an array of it will make it easier to implement multiplayer support. 
+	TArray<class ACarPlayerController*> FAllPlayerControllers;
+	TArray<class AAICustomCar_Controller*> FAllAIControllers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
 	bool DrawDebugWaypoints = false;
@@ -64,4 +74,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool InitFlag = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool GameLoop = false;
 };

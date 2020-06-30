@@ -17,6 +17,8 @@ public:
 	//Default Constructor
 	ACheckpoint();
 	
+	void Init();
+
 	UFUNCTION()
 	void OnOverlapBegin(class AActor* OverlappedActor, class AActor* OtherActor);
 
@@ -24,10 +26,6 @@ public:
 	void OnOverlapEnd(class AActor* OverlappedActor, class AActor* OtherActor);
 
 
-	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	//Member Variables
 public:

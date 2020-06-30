@@ -21,17 +21,20 @@ UACO_Hover::UACO_Hover()
 	// ...
 }
 
-// Called when the game starts
-void UACO_Hover::BeginPlay()
+void UACO_Hover::Init()
 {
-	Super::BeginPlay();
 	Owner = (ACustomCar*)GetOwner();
-
 	ensureAlways(Owner);
 	SetupInputComponent();
-	
-
+	SetCenterOfMass();
 }
+
+void UACO_Hover::Update()
+{
+	ApplyCustomGravity();
+	DebugDraw();
+}
+
 
 void UACO_Hover::DebugDraw()
 {
@@ -45,14 +48,6 @@ void UACO_Hover::DebugDraw()
 void UACO_Hover::SetCenterOfMass()
 {
 	Owner->ShipCore->SetCenterOfMass(-Owner->GetActorUpVector()*CenterOfMassOffset);
-}
-
-// Called every frame
-void UACO_Hover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	ApplyCustomGravity();
-	DebugDraw();
 }
 
 void UACO_Hover::SetupInputComponent()

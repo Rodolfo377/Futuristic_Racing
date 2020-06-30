@@ -15,6 +15,16 @@ ACheckpoint::ACheckpoint()
 	OnActorEndOverlap.AddDynamic(this, &ACheckpoint::OnOverlapEnd);
 }
 
+void ACheckpoint::Init()
+{
+	if (m_CheckpointId == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("invalid checkpoint id! Insert a instance-unique value between 1-3"))
+			return;
+	}
+	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Purple, true, -1, 0, 5);
+}
+
 void ACheckpoint::OnOverlapBegin(AActor * OverlappedActor, AActor * OtherActor)
 {
 	ACustomCar* vehicle = Cast<ACustomCar>(OtherActor);
@@ -26,19 +36,6 @@ void ACheckpoint::OnOverlapBegin(AActor * OverlappedActor, AActor * OtherActor)
 
 void ACheckpoint::OnOverlapEnd(AActor * OverlappedActor, AActor * OtherActor)
 {
-
-}
-
-// Called when the game starts or when spawned
-void ACheckpoint::BeginPlay()
-{
-	Super::BeginPlay();
-	if (m_CheckpointId == 0)
-	{
-		UE_LOG(LogTemp, Error, TEXT("invalid checkpoint id! Insert a instance-unique value between 1-3"))
-			return;
-	}
-	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Purple, true, -1, 0, 5);
 
 }
 

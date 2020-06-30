@@ -24,8 +24,8 @@ class RACINGGAME_API UACO_SaveGameData : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UACO_SaveGameData();
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void Init();
+	void Update();
 
 	UFUNCTION()
 	void SaveGameData();
@@ -34,8 +34,6 @@ public:
 	void LoadGameData();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
 	//member variables
 public:

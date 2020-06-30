@@ -20,28 +20,22 @@ UACO_SaveGameData::UACO_SaveGameData()
 
 }
 
-
-// Called when the game starts
-void UACO_SaveGameData::BeginPlay()
+void UACO_SaveGameData::Init()
 {
-	Super::BeginPlay();
 	Owner = Cast<ACustomCar>(GetOwner());
 	ensureAlways(Owner);
-	
 }
 
-
-// Called every frame
-void UACO_SaveGameData::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UACO_SaveGameData::Update()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (SaveGameInstance && !SaveGameInstance->IsValidLowLevel())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Save Game bug occured!"));
 	}
-
-	// ...
 }
+
+
+
 
 void UACO_SaveGameData::SaveGameData()
 {
