@@ -61,8 +61,15 @@ void UACO_TimeKeeper::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	{
 		ARacingGameGameModeBase* GameMode = Cast<ARacingGameGameModeBase>
 			(UGameplayStatics::GetGameMode(this));
-		RaceInfo = GameMode->RaceInfo;
-		ensureAlways(RaceInfo);
+		if (GameMode->IsValidLowLevel())
+		{
+			RaceInfo = GameMode->RaceInfo;
+			if (RaceInfo->IsValidLowLevel())
+			{
+				printOnScreen(TEXT("Loaded Race Info"))
+			}
+			
+		}
 	}
 }
 
