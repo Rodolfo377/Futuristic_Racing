@@ -48,9 +48,11 @@ void ARacingGameGameModeBase::Init()
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Track"), AllActors);
 	ensureAlways(AllActors.Num() == 1);
 	Track = AllActors[0];
+
 	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
 	ensureAlways(Spline);
 	AllActors.Empty();
+
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomCar::StaticClass(), AllActors);
 	for (AActor* Actor : AllActors)
 	{

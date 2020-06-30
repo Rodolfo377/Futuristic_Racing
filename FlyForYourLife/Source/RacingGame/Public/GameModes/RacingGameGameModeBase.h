@@ -12,6 +12,8 @@ class URaceInfo;
  * 
  */
 
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdate)
+
 USTRUCT(BlueprintType)
 struct FWaypointInfo
 {
@@ -39,6 +41,7 @@ public:
 	void CompleteGame();
 
 	void Init();
+	UFUNCTION(BlueprintCallable)
 	void Update();
 
 	virtual void Tick(float DeltaTime) override;
