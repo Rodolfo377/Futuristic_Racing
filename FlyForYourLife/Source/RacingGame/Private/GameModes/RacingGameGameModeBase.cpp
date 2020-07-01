@@ -70,21 +70,29 @@ void ARacingGameGameModeBase::CompleteGame()
 void ARacingGameGameModeBase::AddTrackSpline(USplineComponent *SplineComponent)
 {
 	Spline = SplineComponent;
+	if (CheckLoadedActors())
+		FinishedLoading = true;
 }
 
 void ARacingGameGameModeBase::AddCustomCar(ACustomCar * Vehicle)
 {
 	AllCars.Emplace(Vehicle);
+	if (CheckLoadedActors())
+		FinishedLoading = true;
 }
 
 void ARacingGameGameModeBase::AddPlayerController(ACarPlayerController * PlayerController)
 {
 	FAllPlayerControllers.Emplace(PlayerController);
+	if (CheckLoadedActors())
+		FinishedLoading = true;
 }
 
 void ARacingGameGameModeBase::AddAIController(AAICustomCar_Controller * AIController)
 {
 	FAllAIControllers.Emplace(AIController);
+	if (CheckLoadedActors())
+		FinishedLoading = true;
 }
 
 void ARacingGameGameModeBase::BeginPlay()
@@ -94,6 +102,12 @@ void ARacingGameGameModeBase::BeginPlay()
 
 void ARacingGameGameModeBase::Tick(float DeltaTime)
 {
+	if (FinishedLoading)
+	{
+		StartGame();
+		FinishedLoading = false;
+	}
+
 	if (GameLoop)
 	{
 		Update();

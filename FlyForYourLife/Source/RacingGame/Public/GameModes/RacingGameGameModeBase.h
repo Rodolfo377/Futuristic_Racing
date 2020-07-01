@@ -95,4 +95,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool GameLoop = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool FinishedLoading = false;
 };

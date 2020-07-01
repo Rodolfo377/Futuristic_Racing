@@ -6,6 +6,8 @@
 #include "../../Public/ActorComponents/ACO_SaveGameData.h"
 #include "../../Public/ActorComponents/ACO_Hover.h"
 #include "../../Public/ActorComponents/ACO_Position.h"
+#include "../../Public/ActorComponents/ACO_CarEngine.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -14,12 +16,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "../../Public/ActorComponents/ACO_CarEngine.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
-#include "../../Public/ActorComponents/ACO_CarCollision.h"
 #include "Engine/StaticMeshActor.h"
-
+#include "UObject/UObjectGlobals.h"
 
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))
 
@@ -31,8 +31,10 @@
 ACustomCar::ACustomCar()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	
+	PrimaryActorTick.bCanEverTick = false;
 
+	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
+	ensureAlways(CarEngine);
 }
 
 
@@ -55,25 +57,19 @@ void ACustomCar::Init()
 	ensureAlways(ShipCore);
 	ensureAlways(ShipBody);
 
-
-	PrimaryActorTick.bCanEverTick = false;
-
-	//set this pawn to be controlled by the lowest-numbered player
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
-	CarEngine = CreateDefaultSubobject<UACO_CarEngine>(TEXT("CarEngine"));
-	ensureAlways(CarEngine);
+	/*CarEngine = NewObject<UACO_CarEngine>(this->_getUObject(), UACO_CarEngine::StaticClass(), FName("CarEngine"));
+	ensureAlways(CarEngine);*/
 	CarEngine->Init();
 
-	CarTimeKeeper = CreateDefaultSubobject<UACO_TimeKeeper>(TEXT("TimeKeeper"));
+	CarTimeKeeper = NewObject<UACO_TimeKeeper>(this->_getUObject(), UACO_TimeKeeper::StaticClass(), FName("CarTimeKeeper"));
 	ensureAlways(CarTimeKeeper);
 	CarTimeKeeper->Init();
 
-	CarHover = CreateDefaultSubobject<UACO_Hover>(TEXT("CarHover"));
+	CarHover = NewObject<UACO_Hover>(this->_getUObject(), UACO_Hover::StaticClass(), FName("CarHover"));
 	ensureAlways(CarHover);
 	CarHover->Init();
 
-	CarPosition = CreateDefaultSubobject<UACO_Position>(TEXT("CarPosition"));
+	CarPosition = NewObject<UACO_Position>(this->_getUObject(), UACO_Position::StaticClass(), FName("CarPosition"));
 	ensureAlways(CarPosition);
 	CarPosition->Init();
 
