@@ -33,6 +33,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int Opponents = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int Players = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		EMatchTypeSelection SelectedMatchType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<class ACustomCar*> AllShips;

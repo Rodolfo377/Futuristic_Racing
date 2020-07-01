@@ -14,8 +14,43 @@
 #include "Components/SplineComponent.h"
 
 
+bool ARacingGameGameModeBase::CheckLoadedActors()
+{
+
+	if (!RaceInfo->IsValidLowLevel())
+	{
+		RaceInfo = Cast<URaceInfo>(GetComponentByClass(URaceInfo::StaticClass()));
+		ensureAlways(RaceInfo);
+	}
+
+	bool TrackLoaded = false;  
+	bool NPCsLoaded = false;
+	bool PlayersLoaded = false;
+	bool AllVehiclesLoaded = false;
+
+	TrackLoaded = Spline->IsValidLowLevel();
+	if (TrackLoaded)
+		UE_LOG(LogTemp, Warning, TEXT("Track Loaded"))
+	if (FAllAIControllers.Num() == RaceInfo->Opponents)
+		NPCsLoaded = true;
+	if (FAllPlayerControllers.Num() == RaceInfo->Players)
+		PlayersLoaded = true;
+	if (AllCars.Num() == RaceInfo->Opponents + RaceInfo->Players)
+		AllVehiclesLoaded = true;
+
+	if (TrackLoaded && NPCsLoaded && PlayersLoaded && AllVehiclesLoaded)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void ARacingGameGameModeBase::StartGame()
 {
+	
 	Init();
 	GameLoop = true;
 }
@@ -32,6 +67,31 @@ void ARacingGameGameModeBase::CompleteGame()
 {
 }
 
+void ARacingGameGameModeBase::AddTrackSpline(USplineComponent *SplineComponent)
+{
+	Spline = SplineComponent;
+}
+
+void ARacingGameGameModeBase::AddCustomCar(ACustomCar * Vehicle)
+{
+	AllCars.Emplace(Vehicle);
+}
+
+void ARacingGameGameModeBase::AddPlayerController(ACarPlayerController * PlayerController)
+{
+	FAllPlayerControllers.Emplace(PlayerController);
+}
+
+void ARacingGameGameModeBase::AddAIController(AAICustomCar_Controller * AIController)
+{
+	FAllAIControllers.Emplace(AIController);
+}
+
+void ARacingGameGameModeBase::BeginPlay()
+{
+	
+}
+
 void ARacingGameGameModeBase::Tick(float DeltaTime)
 {
 	if (GameLoop)
@@ -42,16 +102,15 @@ void ARacingGameGameModeBase::Tick(float DeltaTime)
 
 void ARacingGameGameModeBase::Init()
 {
-	RaceInfo = Cast<URaceInfo>(GetComponentByClass(URaceInfo::StaticClass()));
-	check(RaceInfo);
+	
 	TArray<AActor*> AllActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Track"), AllActors);
+	/*UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Track"), AllActors);
 	ensureAlways(AllActors.Num() == 1);
 	Track = AllActors[0];
 
-	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));
+	Spline = Cast<USplineComponent>(Track->GetComponentByClass(USplineComponent::StaticClass()));*/
 	ensureAlways(Spline);
-	AllActors.Empty();
+	/*AllActors.Empty();
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomCar::StaticClass(), AllActors);
 	for (AActor* Actor : AllActors)
@@ -79,7 +138,7 @@ void ARacingGameGameModeBase::Init()
 		FAllAIControllers.Emplace(aiController);
 	}
 
-	AllActors.Empty();
+	AllActors.Empty();*/
 
 	for (ACarPlayerController* PlayerController: FAllPlayerControllers)
 	{

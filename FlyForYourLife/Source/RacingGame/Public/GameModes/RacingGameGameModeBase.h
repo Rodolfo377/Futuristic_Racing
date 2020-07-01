@@ -31,6 +31,9 @@ class RACINGGAME_API ARacingGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
+	//returns true if all the needed actors were initialized.
+	UFUNCTION(BlueprintCallable)
+	bool CheckLoadedActors();
 	UFUNCTION(BlueprintCallable)
 	void StartGame();
 	UFUNCTION(BlueprintCallable)
@@ -44,6 +47,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Update();
 
+	UFUNCTION(BlueprintCallable)
+	void AddTrackSpline(class USplineComponent* SplineComponent);
+
+	UFUNCTION(BlueprintCallable)
+	void AddCustomCar(ACustomCar* Vehicle);
+
+	UFUNCTION(BlueprintCallable)
+	void AddPlayerController(class ACarPlayerController* PlayerController);
+
+	UFUNCTION(BlueprintCallable)
+	void AddAIController(class AAICustomCar_Controller* AIController);
+
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 public:
