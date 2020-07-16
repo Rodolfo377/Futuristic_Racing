@@ -26,6 +26,15 @@ UACO_TimeKeeper::UACO_TimeKeeper()
 
 void UACO_TimeKeeper::Init()
 {
+	Owner = (ACustomCar*)GetOwner();
+	ensureAlways(Owner);
+	if (UGameplayStatics::GetGameMode(GetWorld()))
+	{
+		AGameModeBase* detectedGameMode = UGameplayStatics::GetGameMode(GetWorld());
+		GameMode = Cast<ARacingGameGameModeBase>(detectedGameMode);
+	}
+	RaceInfo = GameMode->RaceInfo;
+	ensureAlways(RaceInfo);
 }
 
 void UACO_TimeKeeper::Update()
@@ -62,7 +71,8 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 				AAICustomCar_Controller* DummyController = NewObject<AAICustomCar_Controller>(AAICustomCar_Controller::StaticClass());
 				//Owner->Possess(DummyController);
 				DummyController->Possess(Owner);
-				
+				GameMode->GameLoop = false;
+				//GameMode->CompleteGame = true;
 				return;
 			}
 			StartLapTime();	
@@ -135,6 +145,4 @@ void UTimer::Stop(float FinalTime)
 		- raceClock.LapTimes[index].firstWaypointTime;
 	raceClock.totalLapTimes.push_back(lapTime);
 	lastLapTime = lapTime;
-	FString lapResult = "Stop Lap Timer : " + FString::SanitizeFloat(lapTime);
-	printOnScreen(lapResult);	
 }

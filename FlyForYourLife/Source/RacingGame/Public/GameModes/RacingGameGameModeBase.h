@@ -98,4 +98,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool FinishedLoading = false;
+
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool CompleteGame = false;*/
 };

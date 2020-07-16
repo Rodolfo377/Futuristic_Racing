@@ -50,7 +50,7 @@ bool ARacingGameGameModeBase::CheckLoadedActors()
 
 void ARacingGameGameModeBase::StartGame()
 {
-	
+	PrimaryActorTick.bCanEverTick = true;
 	Init();
 	GameLoop = true;
 }
