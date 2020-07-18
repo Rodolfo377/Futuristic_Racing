@@ -8,6 +8,9 @@
 #include "../../Public/Utilities/DebugLogger.h"
 #include "ACO_TimeKeeper.generated.h"
 
+
+
+
 class ACustomCar;
 class ATimeTrialMode;
 //Detailed Lap-Record, for waypoint-time comparison
@@ -36,6 +39,7 @@ struct UTimer
 	void Update(float DeltaTime);
 	void Stop(float FinalTime);
 };
+
 
 
 
@@ -73,6 +77,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetCurrentLapTime();
 
+
+
 protected:
 	std::vector<int> Checkpoints = { 0, 0, 0 };
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
@@ -82,4 +88,5 @@ public:
 	ACustomCar *Owner = nullptr;
 	class URaceInfo* RaceInfo = nullptr;
 	class ARacingGameGameModeBase* GameMode = nullptr;
+
 };

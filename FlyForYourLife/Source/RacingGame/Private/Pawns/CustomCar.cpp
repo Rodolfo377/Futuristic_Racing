@@ -7,6 +7,7 @@
 #include "../../Public/ActorComponents/ACO_Hover.h"
 #include "../../Public/ActorComponents/ACO_Position.h"
 #include "../../Public/ActorComponents/ACO_CarEngine.h"
+#include "../../Public/Controllers/CarPlayerController.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -73,6 +74,11 @@ void ACustomCar::Init()
 	ensureAlways(CarPosition);
 	CarPosition->Init();
 
+	PlayerController = GetController<ACarPlayerController>();
+	if (PlayerController->IsValidLowLevel())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Controller found!"));
+	}
 }
 
 void ACustomCar::Update()

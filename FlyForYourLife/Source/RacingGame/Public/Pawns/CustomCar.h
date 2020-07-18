@@ -13,6 +13,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class AStaticMeshActor;
 
+
+
 UCLASS()
 class RACINGGAME_API ACustomCar : public APawn
 {
@@ -71,11 +73,14 @@ public:
 	class UACO_SaveGameData* GameSaveComponent = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UACO_Position* CarPosition = nullptr;
-	//Measured in m/s (x10 for aesthetics - big speed numbers on screen woo)
+	//In case a player is controlling this vehicle, hold a reference to the controller so event dispatchers can be called from it. 
+	class ACarPlayerController* PlayerController = nullptr;
 	
 
 	UPROPERTY(EditAnywhere, Category = "Scoring")
 		FString RacerName = "Bob";
+
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		int MaxEnergyLevel = 100;

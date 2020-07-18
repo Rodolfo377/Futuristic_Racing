@@ -8,6 +8,7 @@
 #include "../../Public/GameInfo/RaceInfo.h"
 #include "../../Public/GameModes/RacingGameGameModeBase.h"
 #include "../../Public/Controllers/AICustomCar_Controller.h"
+#include "../../Public/Controllers/CarPlayerController.h"
 
 #include "Engine/World.h"
 #include "Internationalization/Text.h"
@@ -57,22 +58,44 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 {
 	if (Checkpoints.size() == 3)
 	{
+		//Initialize race timer at start of race
 		if (Checkpoints[0] == 0 && Checkpoints[1] == 0 && Checkpoints[2] == 0)
 		{
 			RaceTimer.Start(GetWorld()->TimeSeconds);
 		}
 
+
+		//Completed a Lap
 		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
 		{
 			
 			StopLapTime();	
+			//In case this vehicle is controlled by a player, broadcast event. 
+			if (Owner->PlayerController->IsValidLowLevel())
+			{
+				Owner->PlayerController->PlayerCompletedLap.Broadcast();
+			}
+
+			//Finished the race
 			if (Owner->GetCurrentLap() == RaceInfo->Laps)
 			{
 				AAICustomCar_Controller* DummyController = NewObject<AAICustomCar_Controller>(AAICustomCar_Controller::StaticClass());
 				//Owner->Possess(DummyController);
 				DummyController->Possess(Owner);
 				GameMode->GameLoop = false;
-				//GameMode->CompleteGame = true;
+				
+				//In case this vehicle is controlled by a player, broadcast event. 
+				if (Owner->PlayerController->IsValidLowLevel())
+				{
+					Owner->PlayerController->PlayerFinishedRace.Broadcast();
+				}
+
+				if (Checkpoints[2] != checkpointId)
+				{
+					Checkpoints[0] = Checkpoints[1];
+					Checkpoints[1] = Checkpoints[2];
+					Checkpoints[2] = checkpointId;
+				}
 				return;
 			}
 			StartLapTime();	
