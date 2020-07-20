@@ -23,10 +23,11 @@ public:
 
 	void Init();
 	void Update();
-
+	ACustomCar* GetControlledCar();
+	void SetGameMode(class ARacingGameGameModeBase* _GameMode);
+	void SetControlledCar(ACustomCar* _Car);
 private:
 	ACustomCar* ControlledCar = nullptr;
-	ACustomCar* GetControlledCar();
 	void MoveToTarget(FVector pos);
 	
 	//Member Variables

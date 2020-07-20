@@ -31,7 +31,7 @@ void AAICustomCar_Controller::Init()
 
 void AAICustomCar_Controller::Update()
 {
-	if (ControlledCar->IsValidLowLevel())
+	if (GetControlledCar()->IsValidLowLevel())
 	{
 		if (GameMode->ArrayOfWaypoints.Num() == 0)
 		{
@@ -107,4 +107,14 @@ void AAICustomCar_Controller::MoveToTarget(FVector targetPos)
 ACustomCar* AAICustomCar_Controller::GetControlledCar()
 {
 	return Cast<ACustomCar>(GetPawn());
+}
+
+void AAICustomCar_Controller::SetGameMode(ARacingGameGameModeBase * _GameMode)
+{
+	GameMode = _GameMode;
+}
+
+void AAICustomCar_Controller::SetControlledCar(ACustomCar * _Car)
+{
+	ControlledCar = _Car;
 }

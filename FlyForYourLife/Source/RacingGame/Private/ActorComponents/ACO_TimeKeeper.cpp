@@ -79,10 +79,7 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 			//Finished the race
 			if (Owner->GetCurrentLap() == RaceInfo->Laps)
 			{
-				AAICustomCar_Controller* DummyController = NewObject<AAICustomCar_Controller>(AAICustomCar_Controller::StaticClass());
-				//Owner->Possess(DummyController);
-				DummyController->Possess(Owner);
-				GameMode->GameLoop = false;
+			
 				
 				//In case this vehicle is controlled by a player, broadcast event. 
 				if (Owner->PlayerController->IsValidLowLevel())
@@ -90,6 +87,14 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 					Owner->PlayerController->PlayerFinishedRace.Broadcast();
 				}
 
+				AAICustomCar_Controller* DummyController = NewObject<AAICustomCar_Controller>(AAICustomCar_Controller::StaticClass());
+				ensureAlways(DummyController);
+		
+				DummyController->Possess(Owner);
+				DummyController->SetGameMode(GameMode);
+				DummyController->SetControlledCar(Owner);
+				
+				GameMode->FAllAIControllers.Add(DummyController);
 				if (Checkpoints[2] != checkpointId)
 				{
 					Checkpoints[0] = Checkpoints[1];
