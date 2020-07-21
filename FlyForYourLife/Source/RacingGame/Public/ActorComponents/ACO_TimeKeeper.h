@@ -80,7 +80,7 @@ public:
 
 
 protected:
-	std::vector<int> Checkpoints = { 0, 0, 0 };
+	std::vector<uint32> Checkpoints = { 0, 0, 0 };
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 		int CurrentLap = 1;
 public:	

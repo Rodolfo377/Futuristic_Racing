@@ -64,7 +64,12 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 			RaceTimer.Start(GetWorld()->TimeSeconds);
 		}
 
-
+		if (!(Checkpoints[0]== 1 && checkpointId == 3))
+		{
+			Checkpoints[0] = Checkpoints[1];
+			Checkpoints[1] = Checkpoints[2];
+			Checkpoints[2] = checkpointId;
+		}
 		//Completed a Lap
 		if ((Checkpoints[0] == 1) && (Checkpoints[1] == 2) && (Checkpoints[2] == 3))
 		{
@@ -77,7 +82,7 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 			}
 
 			//Finished the race
-			if (Owner->GetCurrentLap() == RaceInfo->Laps)
+			if (Owner->GetCurrentLap() == RaceInfo->Laps + 1)
 			{
 			
 				
@@ -107,12 +112,7 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 			CurrentLap++;
 		}
 
-		if (Checkpoints[2] != checkpointId)
-		{
-			Checkpoints[0] = Checkpoints[1];
-			Checkpoints[1] = Checkpoints[2];
-			Checkpoints[2] = checkpointId;
-		}
+		
 	}
 }
 
