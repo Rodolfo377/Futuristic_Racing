@@ -80,7 +80,7 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 			{
 				Owner->PlayerController->PlayerCompletedLap.Broadcast();
 			}
-
+			CurrentLap++;
 			//Finished the race
 			if (Owner->GetCurrentLap() == RaceInfo->Laps + 1)
 			{
@@ -109,7 +109,7 @@ void UACO_TimeKeeper::UpdateCheckpoint(uint32 checkpointId)
 				return;
 			}
 			StartLapTime();	
-			CurrentLap++;
+			
 		}
 
 		
