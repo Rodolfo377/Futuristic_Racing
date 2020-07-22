@@ -7,22 +7,22 @@ https://ruddy.itch.io/fly-for-your-life
 
 v 1.0 Features:
 --------------------
-* Game Physics
+### Game Physics
 
-*Hovering: Uses PID controls for more precision and ability to fine-tune variables.
+* Hovering: Uses PID controls for more precision and ability to fine-tune variables.
 
-*Custom Gravity: Allows for vehicle snapping to track in any direction (i.e. driving upside down).
+* Custom Gravity: Allows for vehicle snapping to track in any direction (i.e. driving upside down).
 
-*Movement: Physics-based Acceleration, Braking, Turning.
+* Movement: Physics-based Acceleration, Braking, Turning.
 
-* Artificial Intelligence
+### Artificial Intelligence
 
-*Steering Behaviour for simple movement around track. To be expanded to Context Steering. 
+* Steering Behaviour for simple movement around track. To be expanded to Context Steering. 
 
-* Gameplay
+### Gameplay
 
-*Position tracking along custom-built level.
+* Position tracking along custom-built level.
 
-*Time keeping for laps.
+* Time keeping for laps.
 
 
