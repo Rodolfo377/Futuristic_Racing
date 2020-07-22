@@ -7,6 +7,10 @@ https://ruddy.itch.io/fly-for-your-life
 
 v 1.0 Features:
 --------------------
+### Artificial Intelligence
+
+* Steering Behaviour for simple movement around track. To be expanded to Context Steering. 
+
 ### Game Physics
 
 * Hovering: Uses PID controls for more precision and ability to fine-tune variables.
@@ -15,9 +19,6 @@ v 1.0 Features:
 
 * Movement: Physics-based Acceleration, Braking, Turning.
 
-### Artificial Intelligence
-
-* Steering Behaviour for simple movement around track. To be expanded to Context Steering. 
 
 ### Gameplay
 
